@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const PendingTicketPurchaseSchema = new Schema(
+const PendingProductPaymentSchema = new Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -10,13 +10,15 @@ const PendingTicketPurchaseSchema = new Schema(
     amount: Number,
     phoneNumber: Number,
     accountNumber: String,
-    verified: Boolean,
+    verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-const PendingTicketPurchase = mongoose.model(
-  "PendingTicketPurchase",
-  PendingTicketPurchaseSchema
+exports.PendingProductPayment = mongoose.model(
+  "PendingProductPayment",
+  PendingProductPaymentSchema
 );
-module.exports = PendingTicketPurchase;

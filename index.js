@@ -17,6 +17,8 @@ app.listen(PORT, () => {
 require("./config/db");
 const UserRouter = require("./routes/user");
 const ProductRouter = require("./routes/products");
+const CategoryRouter = require("./routes/categories");
 
 app.use("/api/user", UserRouter);
 app.use("/api/product", ProductRouter);
+app.use("/api/category", CategoryRouter);

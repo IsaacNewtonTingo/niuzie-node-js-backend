@@ -2,6 +2,31 @@ const { Product } = require("../models/products");
 const User = require("../models/user");
 const { v4: uuidv4 } = require("uuid");
 const request = require("request");
+const { PendingProductPayment } = require("../models/pending-product-payment");
+const {
+  CompletedProductPayment,
+} = require("../models/completed-product-payment");
+
+//check how many products user has posted
+exports.checkNumberOfProducts = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const product = await Product.find({ user: userID });
+    const productNumber = product.length;
+
+    res.json({
+      status: "Success",
+      message: "Number of user products retrieved successfully",
+      data: productNumber,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting user product number",
+    });
+  }
+};
 
 exports.postProduct = async (req, res) => {
   try {
@@ -9,6 +34,7 @@ exports.postProduct = async (req, res) => {
       userID,
       phoneNumber,
       productName,
+      category,
       description,
       price,
       image1,
@@ -19,20 +45,22 @@ exports.postProduct = async (req, res) => {
     const user = await User.findOne({ _id: userID });
     const premiumUser = user.premium;
 
-    const newProduct = new Product({
-      user: userID,
-      productName,
-      description,
-      price,
-      image1,
-      image2,
-      image3,
-      image4,
-      promoted: true,
-      expiryDate: Date.now() + 7776000000,
-    });
-
     if (premiumUser == true) {
+      const newProduct = new Product({
+        user: userID,
+        productName,
+        category,
+        description,
+        price,
+        image1,
+        image2,
+        image3,
+        image4,
+        promoted: true,
+        paid: true,
+        expiryDate: Date.now() + 7776000000,
+      });
+
       await newProduct.save();
 
       res.json({
@@ -70,13 +98,55 @@ exports.postProduct = async (req, res) => {
             } else {
               const jsonBody = JSON.parse(body);
               if (jsonBody.success == true) {
-                paymentStatus(accountNumber, res);
+                const newProduct = new Product({
+                  user: userID,
+                  productName,
+                  category,
+                  description,
+                  price,
+                  image1,
+                  image2,
+                  image3,
+                  image4,
+                  paid: true,
+                  expiryDate: Date.now() + 7776000000,
+                });
+
+                paymentStatus(
+                  accountNumber,
+                  amount,
+                  phoneNumber,
+                  newProduct,
+                  res
+                );
+
+                const newPendingPay = new PendingProductPayment({
+                  user: userID,
+                  amount,
+                  accountNumber,
+                  phoneNumber,
+                });
+
+                await newPendingPay.save();
               }
             }
           }
         );
       } else {
         //you have the chance to post another
+
+        const newProduct = new Product({
+          user: userID,
+          productName,
+          category,
+          description,
+          price,
+          image1,
+          image2,
+          image3,
+          image4,
+          expiryDate: Date.now() + 7776000000,
+        });
 
         await newProduct.save();
 
@@ -95,7 +165,13 @@ exports.postProduct = async (req, res) => {
   }
 };
 
-const paymentStatus = async (accountNumber, res) => {
+const paymentStatus = async (
+  accountNumber,
+  amount,
+  phoneNumber,
+  newProduct,
+  res
+) => {
   const interval = setInterval(() => {
     console.log("----Checking payment-----");
     request(
@@ -116,9 +192,25 @@ const paymentStatus = async (accountNumber, res) => {
             clearInterval(interval);
             clearTimeout(timeOut);
 
+            await PendingProductPayment.findOneAndUpdate(
+              { accountNumber },
+              { verified: true }
+            );
+
+            const newSavedProduct = await newProduct.save();
+
+            const newCompletedPayment = new CompletedProductPayment({
+              product: newSavedProduct,
+              amount,
+              phoneNumber,
+              accountNumber,
+            });
+
+            await newCompletedPayment.save();
+
             res.json({
               status: "Success",
-              message: "Payment made successfully",
+              message: "Payment made successfully. Your product was posted",
             });
           }
         }
