@@ -7,8 +7,25 @@ const UserSchema = new Schema(
     lastName: String,
     phoneNumber: Number,
     profilePicture: String,
+    county: String,
+    subCounty: String,
     password: String,
-    verified: Boolean,
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    premium: {
+      type: Boolean,
+      default: false,
+    },
+    admin: {
+      type: Boolean,
+      default: false,
+    },
+    seller: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

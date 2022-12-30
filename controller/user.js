@@ -11,7 +11,7 @@ const credentials = {
 const AfricasTalking = require("africastalking")(credentials);
 
 exports.signup = async (req, res) => {
-  let { firstName, lastName, phoneNumber, password, confirmPassword } =
+  var { firstName, lastName, phoneNumber, password, confirmPassword } =
     req.body;
 
   firstName = firstName.trim();
@@ -55,6 +55,11 @@ exports.signup = async (req, res) => {
     res.json({
       status: "Failed",
       message: "Password is too short",
+    });
+  } else if (password != confirmPassword) {
+    res.json({
+      status: "Failed",
+      message: "Passwords don't match",
     });
   } else {
     //check if phone number is already registered
@@ -106,6 +111,7 @@ const sendVerificationCode = async ({ phoneNumber }, res) => {
                   res.json({
                     status: "Success",
                     messsage: `Verification code sent. Please verify your phone number to finish registration process. Code expires in 1hr`,
+                    data: response,
                   });
                 })
                 .catch((err) => {
@@ -143,8 +149,15 @@ const sendVerificationCode = async ({ phoneNumber }, res) => {
 };
 
 exports.verifyCode = async (req, res) => {
-  let { verificationCode, firstName, lastName, phoneNumber, password } =
-    req.body;
+  let {
+    verificationCode,
+    firstName,
+    lastName,
+    phoneNumber,
+    password,
+    county,
+    subCounty,
+  } = req.body;
 
   verificationCode.trim();
 
@@ -178,6 +191,8 @@ exports.verifyCode = async (req, res) => {
                     password: hashedPassword,
                     profilePicture: "",
                     verified: true,
+                    county,
+                    subCounty,
                   });
 
                   await newUser
@@ -253,7 +268,7 @@ exports.login = async (req, res) => {
         res.json({
           status: "Success",
           message: "Login successfull",
-          data: { userID: user._id },
+          data: { userID: user._id, admin: user.admin },
         });
       }
     }

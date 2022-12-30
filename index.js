@@ -16,5 +16,7 @@ app.listen(PORT, () => {
 
 require("./config/db");
 const UserRouter = require("./routes/user");
+const ProductRouter = require("./routes/products");
 
 app.use("/api/user", UserRouter);
+app.use("/api/product", ProductRouter);
