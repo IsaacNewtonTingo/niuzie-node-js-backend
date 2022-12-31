@@ -391,5 +391,134 @@ exports.getProductReviews = async (req, res) => {
   }
 };
 
-//get products
-exports.getAllProducts = async (req, res) => {};
+//get all products
+exports.getAllProducts = async (req, res) => {
+  try {
+    const {
+      productName,
+      searchTerm,
+      price,
+      county,
+      subcounty,
+      noOfReviews,
+      limit,
+    } = req.query;
+
+    const products = await Product.find({}).sort().limit();
+
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
+    });
+  }
+};
+
+//get one product
+exports.getOneProduct = async (req, res) => {
+  try {
+    const productID = req.params.id;
+    const product = await Product.findOne({ _id: productID });
+    if (product) {
+      res.json({
+        status: "Success",
+        message: "Product retrieved successfully",
+        data: product,
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Product not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting product",
+    });
+  }
+};
+
+//update product
+exports.updateProduct = async (req, res) => {
+  try {
+    const productID = req.params.id;
+    const {
+      userID,
+      productName,
+      category,
+      description,
+      price,
+      image1,
+      image2,
+      image3,
+      image4,
+    } = req.body;
+
+    const product = await Product.findOne({ _id: productID });
+    if (product.user != userID) {
+      res.json({
+        status: "Failed",
+        message: "Anauthorized operation",
+      });
+    } else {
+      await product.updateOne({
+        productName,
+        category,
+        description,
+        price,
+        image1,
+        image2,
+        image3,
+        image4,
+      });
+
+      res.json({
+        status: "Success",
+        message: "Product updated successfully",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while updating product",
+    });
+  }
+};
+
+//delete product
+exports.deleteProduct = async (req, res) => {
+  try {
+    const productID = req.params.id;
+    const { userID } = req.body;
+
+    const product = await Product.findOneAndDelete({
+      $and: [{ user: userID }, { _id: productID }],
+    });
+    if (product) {
+      res.json({
+        status: "Success",
+        message: "Product deleted successfully",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Product not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while deleting product",
+    });
+  }
+};
