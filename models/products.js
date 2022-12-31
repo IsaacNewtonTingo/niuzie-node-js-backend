@@ -14,6 +14,10 @@ const ProductSchema = new Schema(
     },
     description: String,
     price: Number,
+    rating: {
+      type: Schema.Types.Decimal128,
+      default: 0.0,
+    },
     image1: String,
     image2: String,
     image3: String,

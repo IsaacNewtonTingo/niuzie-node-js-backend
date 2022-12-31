@@ -6,6 +6,7 @@ const { PendingProductPayment } = require("../models/pending-product-payment");
 const {
   CompletedProductPayment,
 } = require("../models/completed-product-payment");
+const { ProductReview } = require("../models/product-reviews");
 
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
@@ -228,3 +229,167 @@ const paymentStatus = async (
     });
   }, 120000);
 };
+
+//review a product
+exports.rateProduct = async (req, res) => {
+  try {
+    const productID = req.params.id;
+    const { userID, rating, reviewMessage } = req.body;
+
+    //check if product is available
+    const product = await Product.findOne({ _id: productID });
+
+    if (product.user == userID) {
+      res.json({
+        status: "Failed",
+        message: "Anauthorized operation. You can't review yourself",
+      });
+    } else {
+      if (product) {
+        //rate then add review
+        //get all reviews and ratings
+        const productReviews = await ProductReview.find({ product: productID });
+
+        if (productReviews.length < 1) {
+          //there is no previous review
+          await Product.findOneAndUpdate({ _id: productID }, { rating });
+          addReview(userID, rating, productID, reviewMessage, res);
+        } else {
+          const numberOfPeopleRating = productReviews.length + 1;
+          const sumOfOldRatings = productReviews
+            .map((rating) => rating.rating)
+            .reduce((acc, rating) => rating + acc);
+
+          const newRating = (sumOfOldRatings + rating) / numberOfPeopleRating;
+
+          await Product.findOneAndUpdate(
+            { _id: productID },
+            { rating: newRating }
+          ).then(() => {
+            addReview(userID, rating, productID, reviewMessage, res);
+          });
+        }
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Can't add review. Product not found",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while reviewing product",
+    });
+  }
+};
+
+const addReview = async (userID, rating, productID, reviewMessage, res) => {
+  try {
+    const newReview = new ProductReview({
+      user: userID,
+      product: productID,
+      rating,
+      reviewMessage,
+    });
+
+    await newReview.save();
+    res.json({
+      status: "Success",
+      message: "Review added successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while rating product",
+    });
+  }
+};
+
+//delete review
+exports.deleteProductReview = async (req, res) => {
+  try {
+    const { userID, productID } = req.body;
+    const reviewID = req.params.id;
+
+    const review = await ProductReview.findOneAndDelete({
+      $and: [{ user: userID }, { _id: reviewID }],
+    });
+
+    if (review) {
+      //update rating
+      const productReviews = await ProductReview.find({ product: productID });
+      if (productReviews.length < 1) {
+        //set rating to 0
+        await Product.findOneAndUpdate({ _id: productID }, { rating: 0 });
+
+        res.json({
+          status: "Success",
+          message: "Review deleted successfully",
+        });
+      } else {
+        const numberOfPeopleRating = productReviews.length;
+        const sumOfOldRatings = productReviews
+          .map((rating) => rating.rating)
+          .reduce((acc, rating) => rating + acc);
+
+        const newRating = sumOfOldRatings / numberOfPeopleRating;
+
+        await Product.findOneAndUpdate(
+          { _id: productID },
+          { rating: newRating }
+        );
+
+        res.json({
+          status: "Success",
+          message: "Review deleted successfully",
+        });
+      }
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Review not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while deleting review",
+    });
+  }
+};
+
+//get reviews for a product
+exports.getProductReviews = async (req, res) => {
+  try {
+    const productID = req.params.id;
+    //check if product is available
+    const product = await Product.findOne({ _id: productID });
+    if (product) {
+      const productReviews = await ProductReview.find({ product: productID });
+      res.json({
+        status: "Success",
+        message: "Product reviews retrieved succesfully",
+        data: productReviews,
+      });
+    } else {
+      console.log(error);
+      res.json({
+        status: "Failed",
+        message: "Product not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting product reviews",
+    });
+  }
+};
+
+//get products
+exports.getAllProducts = async (req, res) => {};
