@@ -1,4 +1,5 @@
 const { Category } = require("../models/categories");
+const { Product } = require("../models/products");
 
 exports.addCategory = async (req, res) => {
   try {
@@ -73,6 +74,25 @@ exports.getAllCategories = async (req, res) => {
     res.json({
       status: "Failed",
       message: "An error occured while getting categories",
+    });
+  }
+};
+
+//get products of a category
+exports.getCategoryProducts = async (req, res) => {
+  try {
+    const categoryID = req.params.id;
+    const products = await Product.find({ category: categoryID });
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
     });
   }
 };
