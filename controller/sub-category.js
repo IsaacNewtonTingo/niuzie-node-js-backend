@@ -1,0 +1,102 @@
+const { Product } = require("../models/products");
+const { SubCategory } = require("../models/sub-category");
+
+exports.addSubCategory = async (req, res) => {
+  try {
+    const { subCategoryName, category } = req.body;
+    //check if category already exists
+
+    const subCategory = await SubCategory.findOne({ subCategoryName });
+    if (subCategory) {
+      res.json({
+        status: "Failed",
+        message: "Category with the given name already exists",
+      });
+    } else {
+      const newSubCategory = new SubCategory({
+        subCategoryName,
+        category,
+      });
+
+      await newSubCategory.save();
+      res.json({
+        status: "Success",
+        message: "Sub category added successfully",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while adding sub category",
+    });
+  }
+};
+
+//delete sub category
+exports.deleteSubCategory = async (req, res) => {
+  try {
+    const subCategoryID = req.params.id;
+    //check if category already exists
+
+    const subCategory = await SubCategory.findOneAndDelete({
+      _id: subCategoryID,
+    });
+    if (subCategory) {
+      res.json({
+        status: "Success",
+        message: "Sub category deleted successfully",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Sub category doesn't exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while deleting sub category",
+    });
+  }
+};
+
+//get all categories
+exports.getAllSubCategories = async (req, res) => {
+  try {
+    const subCategories = await SubCategory.find({}).sort({
+      subCategoryName: 1,
+    });
+    res.json({
+      status: "Success",
+      message: "Sub categories retrieved successfully",
+      data: subCategories,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting sub categories",
+    });
+  }
+};
+
+//get products of a category
+exports.getSubCategoryProducts = async (req, res) => {
+  try {
+    const subCategoryID = req.params.id;
+    const products = await Product.find({ subCategory: subCategoryID });
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
+    });
+  }
+};

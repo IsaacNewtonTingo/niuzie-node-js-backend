@@ -36,6 +36,8 @@ exports.postProduct = async (req, res) => {
       phoneNumber,
       productName,
       category,
+      subCategory,
+      condition,
       description,
       price,
       image1,
@@ -51,6 +53,8 @@ exports.postProduct = async (req, res) => {
         user: userID,
         productName,
         category,
+        subCategory,
+        condition,
         description,
         price,
         image1,
@@ -103,6 +107,8 @@ exports.postProduct = async (req, res) => {
                   user: userID,
                   productName,
                   category,
+                  subCategory,
+                  condition,
                   description,
                   price,
                   image1,
@@ -140,6 +146,8 @@ exports.postProduct = async (req, res) => {
           user: userID,
           productName,
           category,
+          subCategory,
+          condition,
           description,
           price,
           image1,
@@ -394,23 +402,78 @@ exports.getProductReviews = async (req, res) => {
 //get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const {
-      productName,
+    var {
       searchTerm,
-      price,
+      category,
+      subCategory,
       county,
       subcounty,
+
+      price,
+      rating,
       noOfReviews,
+
       limit,
+      pageNumber,
     } = req.query;
 
-    const products = await Product.find({}).sort().limit();
+    searchTerm = searchTerm.trim();
 
-    res.json({
-      status: "Success",
-      message: "Products retrieved successfully",
-      data: products,
-    });
+    price = -1;
+    rating = 1;
+    noOfReviews = 1;
+    limit = 20;
+    pageNumber = 0;
+
+    if (searchTerm && !category && !subCategory && !county && !subcounty) {
+      const products = await Product.find({
+        $and: [
+          {
+            $or: [
+              { description: { $regex: searchTerm, $options: "1" } },
+              { productName: { $regex: searchTerm, $options: "i" } },
+            ],
+          },
+          { verified: true },
+        ],
+      })
+
+        .populate("user", "-password -seller -admin")
+        .populate("category", "categoryName")
+        .populate("subCategory", "subCategoryName")
+        .sort({
+          featured: 1,
+          rating,
+          price,
+          noOfReviews,
+        })
+        .limit(limit)
+        .skip(pageNumber * limit);
+
+      res.json({
+        status: "Success",
+        message: "Products retrieved successfully",
+        data: products,
+      });
+    } else {
+      const products = await Product.find({ verified: true })
+
+        .populate("user", "-password -seller -admin")
+        .populate("category", "categoryName")
+        .populate("subCategory", "subCategoryName")
+        .sort({
+          featured: 1,
+          rating,
+        })
+        .limit(limit)
+        .skip(pageNumber * limit);
+
+      res.json({
+        status: "Success",
+        message: "Products retrieved successfully",
+        data: products,
+      });
+    }
   } catch (error) {
     console.log(error);
     res.json({

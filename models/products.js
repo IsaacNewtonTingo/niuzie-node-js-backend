@@ -12,6 +12,11 @@ const ProductSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
     },
+    subCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubCategory",
+    },
+    condition: String,
     description: String,
     price: Number,
     rating: {
