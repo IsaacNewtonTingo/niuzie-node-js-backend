@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser").json;
-
+var http = require("http");
 const app = express();
 app.use(cors());
 app.use(bodyParser());
@@ -14,7 +14,16 @@ app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
 
+setInterval(function () {
+  http.get("http://localhost:3000/");
+  require("./config/deactivate-expired-products");
+  require("./config/auto-send-email-to-almost-expired-products");
+
+  console.log("--------Restarted--------");
+}, 1200000);
+
 require("./config/db");
+
 const UserRouter = require("./routes/general/user");
 
 const CategoryRouter = require("./routes/admin/categories");

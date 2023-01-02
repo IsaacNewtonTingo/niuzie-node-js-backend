@@ -7,7 +7,7 @@ exports.approveProduct = async (req, res) => {
 
     if (product) {
       if (product.verified == false) {
-        await product.updateOne({ verified: true });
+        await product.updateOne({ verified: true, active: true });
 
         res.json({
           status: "Success",

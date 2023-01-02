@@ -419,7 +419,7 @@ exports.getAllProducts = async (req, res) => {
       pageNumber,
     } = req.query;
 
-    searchTerm = searchTerm.trim();
+    // searchTerm = searchTerm.trim();
 
     price = price ? price : -1;
     rating = rating ? rating : 1;
@@ -432,179 +432,181 @@ exports.getAllProducts = async (req, res) => {
       rating,
       date,
     };
+    const products = await Product.find({});
+    res.send(products);
 
-    if (searchTerm && !category && !subCategory && !county && !subCounty) {
-      const products = await Product.find({
-        $and: [
-          {
-            $or: [
-              { description: { $regex: searchTerm, $options: "1" } },
-              { productName: { $regex: searchTerm, $options: "i" } },
-            ],
-          },
-          { verified: true },
-        ],
-      })
+    // if (searchTerm && !category && !subCategory && !county && !subCounty) {
+    //   const products = await Product.find({
+    //     $and: [
+    //       {
+    //         $or: [
+    //           { description: { $regex: searchTerm, $options: "1" } },
+    //           { productName: { $regex: searchTerm, $options: "i" } },
+    //         ],
+    //       },
+    //       { verified: true },
+    //     ],
+    //   })
 
-        .populate("user", "-password -seller -admin")
-        .populate("category", "categoryName")
-        .populate("subCategory", "subCategoryName")
-        .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+    //     .populate("user", "-password -seller -admin")
+    //     .populate("category", "categoryName")
+    //     .populate("subCategory", "subCategoryName")
+    //     .sort(sort)
+    //     .limit(limit)
+    //     .skip(pageNumber * limit);
 
-      res.json({
-        status: "Success",
-        message: "Products retrieved successfully",
-        data: products,
-      });
-    } else if (
-      searchTerm &&
-      category &&
-      !subCategory &&
-      !county &&
-      !subCounty
-    ) {
-      const products = await Product.find({
-        $and: [
-          {
-            $or: [
-              { description: { $regex: searchTerm, $options: "1" } },
-              { productName: { $regex: searchTerm, $options: "i" } },
-            ],
-          },
-          { verified: true },
-          { category },
-        ],
-      })
+    //   res.json({
+    //     status: "Success",
+    //     message: "Products retrieved successfully",
+    //     data: products,
+    //   });
+    // } else if (
+    //   searchTerm &&
+    //   category &&
+    //   !subCategory &&
+    //   !county &&
+    //   !subCounty
+    // ) {
+    //   const products = await Product.find({
+    //     $and: [
+    //       {
+    //         $or: [
+    //           { description: { $regex: searchTerm, $options: "1" } },
+    //           { productName: { $regex: searchTerm, $options: "i" } },
+    //         ],
+    //       },
+    //       { verified: true },
+    //       { category },
+    //     ],
+    //   })
 
-        .populate("user", "-password -seller -admin")
-        .populate("category", "categoryName")
-        .populate("subCategory", "subCategoryName")
-        .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+    //     .populate("user", "-password -seller -admin")
+    //     .populate("category", "categoryName")
+    //     .populate("subCategory", "subCategoryName")
+    //     .sort(sort)
+    //     .limit(limit)
+    //     .skip(pageNumber * limit);
 
-      res.json({
-        status: "Success",
-        message: "Products retrieved successfully",
-        data: products,
-      });
-    } else if (searchTerm && category && subCategory && !county && !subCounty) {
-      const products = await Product.find({
-        $and: [
-          {
-            $or: [
-              { description: { $regex: searchTerm, $options: "1" } },
-              { productName: { $regex: searchTerm, $options: "i" } },
-            ],
-          },
-          { verified: true },
-          { category },
-          { subCategory },
-        ],
-      })
+    //   res.json({
+    //     status: "Success",
+    //     message: "Products retrieved successfully",
+    //     data: products,
+    //   });
+    // } else if (searchTerm && category && subCategory && !county && !subCounty) {
+    //   const products = await Product.find({
+    //     $and: [
+    //       {
+    //         $or: [
+    //           { description: { $regex: searchTerm, $options: "1" } },
+    //           { productName: { $regex: searchTerm, $options: "i" } },
+    //         ],
+    //       },
+    //       { verified: true },
+    //       { category },
+    //       { subCategory },
+    //     ],
+    //   })
 
-        .populate("user", "-password -seller -admin")
-        .populate("category", "categoryName")
-        .populate("subCategory", "subCategoryName")
-        .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+    //     .populate("user", "-password -seller -admin")
+    //     .populate("category", "categoryName")
+    //     .populate("subCategory", "subCategoryName")
+    //     .sort(sort)
+    //     .limit(limit)
+    //     .skip(pageNumber * limit);
 
-      res.json({
-        status: "Success",
-        message: "Products retrieved successfully",
-        data: products,
-      });
-    } else if (searchTerm && category && subCategory && county && !subCounty) {
-      const products = await Product.find({
-        $and: [
-          {
-            $or: [
-              { description: { $regex: searchTerm, $options: "1" } },
-              { productName: { $regex: searchTerm, $options: "i" } },
-            ],
-          },
-          { verified: true },
-          { category },
-          { subCategory },
-        ],
-      })
+    //   res.json({
+    //     status: "Success",
+    //     message: "Products retrieved successfully",
+    //     data: products,
+    //   });
+    // } else if (searchTerm && category && subCategory && county && !subCounty) {
+    //   const products = await Product.find({
+    //     $and: [
+    //       {
+    //         $or: [
+    //           { description: { $regex: searchTerm, $options: "1" } },
+    //           { productName: { $regex: searchTerm, $options: "i" } },
+    //         ],
+    //       },
+    //       { verified: true },
+    //       { category },
+    //       { subCategory },
+    //     ],
+    //   })
 
-        .populate("user", "-password -seller -admin")
-        .populate("category", "categoryName")
-        .populate("subCategory", "subCategoryName")
-        .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+    //     .populate("user", "-password -seller -admin")
+    //     .populate("category", "categoryName")
+    //     .populate("subCategory", "subCategoryName")
+    //     .sort(sort)
+    //     .limit(limit)
+    //     .skip(pageNumber * limit);
 
-      const filteredProducts = products.filter(function (product) {
-        if (product.user.county == county) {
-          return true;
-        }
-      });
+    //   const filteredProducts = products.filter(function (product) {
+    //     if (product.user.county == county) {
+    //       return true;
+    //     }
+    //   });
 
-      res.json({
-        status: "Success",
-        message: "Products retrieved successfully",
-        data: filteredProducts,
-      });
-    } else if (searchTerm && category && subCategory && county && subCounty) {
-      const products = await Product.find({
-        $and: [
-          {
-            $or: [
-              { description: { $regex: searchTerm, $options: "1" } },
-              { productName: { $regex: searchTerm, $options: "i" } },
-            ],
-          },
-          { verified: true },
-          { category },
-          { subCategory },
-        ],
-      })
+    //   res.json({
+    //     status: "Success",
+    //     message: "Products retrieved successfully",
+    //     data: filteredProducts,
+    //   });
+    // } else if (searchTerm && category && subCategory && county && subCounty) {
+    //   const products = await Product.find({
+    //     $and: [
+    //       {
+    //         $or: [
+    //           { description: { $regex: searchTerm, $options: "1" } },
+    //           { productName: { $regex: searchTerm, $options: "i" } },
+    //         ],
+    //       },
+    //       { verified: true },
+    //       { category },
+    //       { subCategory },
+    //     ],
+    //   })
 
-        .populate("user", "-password -seller -admin")
-        .populate("category", "categoryName")
-        .populate("subCategory", "subCategoryName")
-        .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+    //     .populate("user", "-password -seller -admin")
+    //     .populate("category", "categoryName")
+    //     .populate("subCategory", "subCategoryName")
+    //     .sort(sort)
+    //     .limit(limit)
+    //     .skip(pageNumber * limit);
 
-      const filteredProducts = products.filter(function (product) {
-        if (
-          product.user.county == county &&
-          product.user.subCounty == subCounty
-        ) {
-          return true;
-        }
-      });
+    //   const filteredProducts = products.filter(function (product) {
+    //     if (
+    //       product.user.county == county &&
+    //       product.user.subCounty == subCounty
+    //     ) {
+    //       return true;
+    //     }
+    //   });
 
-      res.json({
-        status: "Success",
-        message: "Products retrieved successfully",
-        data: filteredProducts,
-      });
-    } else {
-      const products = await Product.find({ verified: true })
+    //   res.json({
+    //     status: "Success",
+    //     message: "Products retrieved successfully",
+    //     data: filteredProducts,
+    //   });
+    // } else {
+    //   const products = await Product.find({ verified: true })
 
-        .populate("user", "-password -seller -admin")
-        .populate("category", "categoryName")
-        .populate("subCategory", "subCategoryName")
-        .sort({
-          featured: 1,
-          rating,
-        })
-        .limit(limit)
-        .skip(pageNumber * limit);
+    //     .populate("user", "-password -seller -admin")
+    //     .populate("category", "categoryName")
+    //     .populate("subCategory", "subCategoryName")
+    //     .sort({
+    //       featured: 1,
+    //       rating,
+    //     })
+    //     .limit(limit)
+    //     .skip(pageNumber * limit);
 
-      res.json({
-        status: "Success",
-        message: "Products retrieved successfully",
-        data: products,
-      });
-    }
+    //   res.json({
+    //     status: "Success",
+    //     message: "Products retrieved successfully",
+    //     data: products,
+    //   });
+    // }
   } catch (error) {
     console.log(error);
     res.json({
