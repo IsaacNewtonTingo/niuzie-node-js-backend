@@ -43,6 +43,6 @@ const ProductSchema = new Schema(
   },
   { timestamps: true }
 );
-ProductSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7776000 });
+// ProductSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7776000 });
 
 exports.Product = mongoose.model("Product", ProductSchema);
