@@ -1,5 +1,5 @@
-const { BuyerNeed } = require("../models/buyer-needs");
-const User = require("../models/user");
+const { BuyerNeed } = require("../../models/buyer/buyer-needs");
+const User = require("../../models/general/user");
 
 exports.postNeed = async (req, res) => {
   try {

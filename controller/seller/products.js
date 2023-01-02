@@ -1,12 +1,14 @@
-const { Product } = require("../models/products");
-const User = require("../models/user");
+const { Product } = require("../../models/seller/products");
+const User = require("../../models/general/user");
 const { v4: uuidv4 } = require("uuid");
 const request = require("request");
-const { PendingProductPayment } = require("../models/pending-product-payment");
+const {
+  PendingProductPayment,
+} = require("../../models/admin/pending-product-payment");
 const {
   CompletedProductPayment,
-} = require("../models/completed-product-payment");
-const { ProductReview } = require("../models/product-reviews");
+} = require("../../models/admin/completed-product-payment");
+const { ProductReview } = require("../../models/seller/product-reviews");
 
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
@@ -407,11 +409,11 @@ exports.getAllProducts = async (req, res) => {
       category,
       subCategory,
       county,
-      subcounty,
+      subCounty,
 
       price,
       rating,
-      noOfReviews,
+      date,
 
       limit,
       pageNumber,
@@ -419,13 +421,19 @@ exports.getAllProducts = async (req, res) => {
 
     searchTerm = searchTerm.trim();
 
-    price = -1;
-    rating = 1;
-    noOfReviews = 1;
+    price = price ? price : -1;
+    rating = rating ? rating : 1;
+
     limit = 20;
     pageNumber = 0;
 
-    if (searchTerm && !category && !subCategory && !county && !subcounty) {
+    var sort = {
+      price,
+      rating,
+      date,
+    };
+
+    if (searchTerm && !category && !subCategory && !county && !subCounty) {
       const products = await Product.find({
         $and: [
           {
@@ -441,12 +449,7 @@ exports.getAllProducts = async (req, res) => {
         .populate("user", "-password -seller -admin")
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
-        .sort({
-          featured: 1,
-          rating,
-          price,
-          noOfReviews,
-        })
+        .sort(sort)
         .limit(limit)
         .skip(pageNumber * limit);
 
@@ -454,6 +457,134 @@ exports.getAllProducts = async (req, res) => {
         status: "Success",
         message: "Products retrieved successfully",
         data: products,
+      });
+    } else if (
+      searchTerm &&
+      category &&
+      !subCategory &&
+      !county &&
+      !subCounty
+    ) {
+      const products = await Product.find({
+        $and: [
+          {
+            $or: [
+              { description: { $regex: searchTerm, $options: "1" } },
+              { productName: { $regex: searchTerm, $options: "i" } },
+            ],
+          },
+          { verified: true },
+          { category },
+        ],
+      })
+
+        .populate("user", "-password -seller -admin")
+        .populate("category", "categoryName")
+        .populate("subCategory", "subCategoryName")
+        .sort(sort)
+        .limit(limit)
+        .skip(pageNumber * limit);
+
+      res.json({
+        status: "Success",
+        message: "Products retrieved successfully",
+        data: products,
+      });
+    } else if (searchTerm && category && subCategory && !county && !subCounty) {
+      const products = await Product.find({
+        $and: [
+          {
+            $or: [
+              { description: { $regex: searchTerm, $options: "1" } },
+              { productName: { $regex: searchTerm, $options: "i" } },
+            ],
+          },
+          { verified: true },
+          { category },
+          { subCategory },
+        ],
+      })
+
+        .populate("user", "-password -seller -admin")
+        .populate("category", "categoryName")
+        .populate("subCategory", "subCategoryName")
+        .sort(sort)
+        .limit(limit)
+        .skip(pageNumber * limit);
+
+      res.json({
+        status: "Success",
+        message: "Products retrieved successfully",
+        data: products,
+      });
+    } else if (searchTerm && category && subCategory && county && !subCounty) {
+      const products = await Product.find({
+        $and: [
+          {
+            $or: [
+              { description: { $regex: searchTerm, $options: "1" } },
+              { productName: { $regex: searchTerm, $options: "i" } },
+            ],
+          },
+          { verified: true },
+          { category },
+          { subCategory },
+        ],
+      })
+
+        .populate("user", "-password -seller -admin")
+        .populate("category", "categoryName")
+        .populate("subCategory", "subCategoryName")
+        .sort(sort)
+        .limit(limit)
+        .skip(pageNumber * limit);
+
+      const filteredProducts = products.filter(function (product) {
+        if (product.user.county == county) {
+          return true;
+        }
+      });
+
+      res.json({
+        status: "Success",
+        message: "Products retrieved successfully",
+        data: filteredProducts,
+      });
+    } else if (searchTerm && category && subCategory && county && subCounty) {
+      const products = await Product.find({
+        $and: [
+          {
+            $or: [
+              { description: { $regex: searchTerm, $options: "1" } },
+              { productName: { $regex: searchTerm, $options: "i" } },
+            ],
+          },
+          { verified: true },
+          { category },
+          { subCategory },
+        ],
+      })
+
+        .populate("user", "-password -seller -admin")
+        .populate("category", "categoryName")
+        .populate("subCategory", "subCategoryName")
+        .sort(sort)
+        .limit(limit)
+        .skip(pageNumber * limit);
+
+      const filteredProducts = products.filter(function (product) {
+        if (
+          product.user.county == county &&
+          product.user.subCounty == subCounty
+        ) {
+          return true;
+        }
+      });
+
+      res.json({
+        status: "Success",
+        message: "Products retrieved successfully",
+        data: filteredProducts,
       });
     } else {
       const products = await Product.find({ verified: true })

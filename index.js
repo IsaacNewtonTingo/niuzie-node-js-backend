@@ -15,14 +15,20 @@ app.listen(PORT, () => {
 });
 
 require("./config/db");
-const UserRouter = require("./routes/user");
-const ProductRouter = require("./routes/products");
-const CategoryRouter = require("./routes/categories");
-const SubCategoryRouter = require("./routes/sub-category");
-const BuyerNeedsRouter = require("./routes/buyer-needs");
+const UserRouter = require("./routes/general/user");
+
+const CategoryRouter = require("./routes/admin/categories");
+const SubCategoryRouter = require("./routes/admin/sub-category");
+const ProductApprovalRouter = require("./routes/admin/product-approval");
+
+const BuyerNeedsRouter = require("./routes/buyer/buyer-needs");
+
+const ProductRouter = require("./routes/seller/products");
 
 app.use("/api/user", UserRouter);
+
+app.use("/api/admin", ProductApprovalRouter, SubCategoryRouter, CategoryRouter);
+
 app.use("/api/product", ProductRouter);
-app.use("/api/category", CategoryRouter);
-app.use("/api/sub-category", SubCategoryRouter);
+
 app.use("/api/buyer-needs", BuyerNeedsRouter);

@@ -4,7 +4,7 @@ const {
   deleteSubCategory,
   getAllSubCategories,
   getSubCategoryProducts,
-} = require("../controller/sub-category");
+} = require("../../controller/admin/sub-category");
 
 const router = express.Router();
 

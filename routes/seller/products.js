@@ -9,7 +9,7 @@ const {
   updateProduct,
   deleteProduct,
   getOneProduct,
-} = require("../controller/products");
+} = require("../../controller/seller/products");
 
 const router = express.Router();
 

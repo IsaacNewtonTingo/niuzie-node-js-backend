@@ -6,11 +6,12 @@ const UserSchema = new Schema(
     firstName: String,
     lastName: String,
     phoneNumber: Number,
+    email: String,
     profilePicture: String,
     county: String,
     subCounty: String,
     password: String,
-    verified: {
+    emailVerified: {
       type: Boolean,
       default: false,
     },

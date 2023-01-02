@@ -6,7 +6,7 @@ const {
   getOneNeed,
   getAllNeeds,
   searchNeeds,
-} = require("../controller/buyer-needs");
+} = require("../../controller/buyer/buyer-needs");
 const router = express.Router();
 
 router.post("/post-need", postNeed);
