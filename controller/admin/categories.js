@@ -3,7 +3,7 @@ const { Product } = require("../../models/seller/products");
 
 exports.addCategory = async (req, res) => {
   try {
-    const { categoryName } = req.body;
+    const { categoryName, categoryImage } = req.body;
     //check if category already exists
 
     const category = await Category.findOne({ categoryName });
@@ -15,6 +15,7 @@ exports.addCategory = async (req, res) => {
     } else {
       const newCategory = new Category({
         categoryName,
+        categoryImage,
       });
 
       await newCategory.save();

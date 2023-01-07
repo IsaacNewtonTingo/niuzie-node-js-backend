@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const CategprySchema = new Schema(
   {
     categoryName: String,
+    categoryImage: String,
   },
   { timestamps: true }
 );
