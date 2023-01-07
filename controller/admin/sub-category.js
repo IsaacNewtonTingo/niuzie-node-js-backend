@@ -62,12 +62,16 @@ exports.deleteSubCategory = async (req, res) => {
   }
 };
 
-//get all categories
-exports.getAllSubCategories = async (req, res) => {
+//get all sub categories of a category
+exports.getCategorySubCategories = async (req, res) => {
   try {
-    const subCategories = await SubCategory.find({}).sort({
-      subCategoryName: 1,
-    });
+    const categoryID = req.params.id;
+
+    const subCategories = await SubCategory.find({ category: categoryID }).sort(
+      {
+        subCategoryName: 1,
+      }
+    );
     res.json({
       status: "Success",
       message: "Sub categories retrieved successfully",
