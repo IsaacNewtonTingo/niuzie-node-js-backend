@@ -432,7 +432,7 @@ exports.getAllProducts = async (req, res) => {
       rating,
       date,
     };
-    const products = await Product.find({});
+    const products = await Product.find({}).populate("user");
     res.send(products);
 
     // if (searchTerm && !category && !subCategory && !county && !subCounty) {
