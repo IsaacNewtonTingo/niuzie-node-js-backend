@@ -144,8 +144,8 @@ exports.verifyCode = async (req, res) => {
                     email,
                     password: hashedPassword,
                     profilePicture: "",
-                    county,
-                    subCounty,
+                    county: "",
+                    subCounty: "",
                   });
 
                   await newUser.save().then(async () => {
