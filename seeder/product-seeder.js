@@ -17,8 +17,7 @@ mongoose
 
 const seedProducts = [
   {
-    userID: "63b2b28ad56b224ad8514e91",
-    phoneNumber: faker.phone.number("+2547########"),
+    user: "63b2b28ad56b224ad8514e91",
     productName: faker.commerce.productName(),
     category: "63b2b380d56b224ad8514e9c",
     subCategory: "63b2b3b4d56b224ad8514e9f",
