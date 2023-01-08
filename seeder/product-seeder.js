@@ -29,6 +29,10 @@ const seedProducts = [
     image2: faker.image.business(),
     image3: faker.image.business(),
     image4: faker.image.business(),
+
+    promoted: true,
+    verified: true,
+    rating: faker.datatype.number({ min: 1, max: 5 }),
   },
 ];
 
