@@ -23,58 +23,12 @@ const credentials = {
 const AfricasTalking = require("africastalking")(credentials);
 
 exports.signup = async (req, res) => {
-  var { firstName, lastName, phoneNumber, email, password, confirmPassword } =
-    req.body;
+  var { phoneNumber, email } = req.body;
 
-  firstName = firstName.trim();
-  lastName = lastName.trim();
   email = email.trim();
   phoneNumber = phoneNumber.toString().trim();
-  password = password.trim();
-  confirmPassword = password.trim();
 
-  const phoneNumberRegex = new RegExp(
-    "^(?:254|\\+254|0)?(7(?:(?:[12][0-9])|(?:0[0-8])|(?:9[0-2]))[0-9]{6})$"
-  );
-
-  if (!firstName) {
-    res.json({
-      status: "Failed",
-      message: "First name is required",
-    });
-  } else if (!lastName) {
-    res.json({
-      status: "Failed",
-      message: "Last name is required",
-    });
-  } else if (!/^[a-zA-Z ]*$/.test(firstName, lastName)) {
-    res.json({
-      status: "Failed",
-      message: "Invalid name format",
-    });
-  } else if (!phoneNumber) {
-    res.json({
-      status: "Failed",
-      message: "Phone number is required",
-    });
-  }
-  // else if (!phoneNumberRegex.test(phoneNumber)) {
-  //   res.json({
-  //     status: "Failed",
-  //     message: "Invalid phone number",
-  //   });
-  // }
-  else if (password.length < 8) {
-    res.json({
-      status: "Failed",
-      message: "Password is too short",
-    });
-  } else if (password != confirmPassword) {
-    res.json({
-      status: "Failed",
-      message: "Passwords don't match",
-    });
-  } else {
+  try {
     //check if phone number is already registered
     await User.findOne({
       $or: [{ email, phoneNumber }],
@@ -89,45 +43,61 @@ exports.signup = async (req, res) => {
         sendVerificationCode(req.body, res);
       }
     });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while signing up",
+    });
   }
 };
 
 const sendVerificationCode = async ({ phoneNumber }, res) => {
-  const toPhoneNumber = `+${phoneNumber}`;
-  //check if there was an initial record
-  await PendingUserVerification.findOneAndDelete({ phoneNumber }).then(
-    async () => {
-      let verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
-      //encrypt code
-      await bcrypt
-        .hash(verificationCode, 10)
-        .then(async (encryptedVerificationCode) => {
-          //add pending verification
-          const pendingVerification = new PendingUserVerification({
-            phoneNumber,
-            verificationCode: encryptedVerificationCode,
-            createdAt: Date.now(),
-          });
-          await pendingVerification.save().then(async () => {
-            //send code
+  try {
+    const toPhoneNumber = `+${phoneNumber}`;
+    //check if there was an initial record
+    await PendingUserVerification.findOneAndDelete({ phoneNumber }).then(
+      async () => {
+        let verificationCode = Math.floor(
+          1000 + Math.random() * 9000
+        ).toString();
+        //encrypt code
+        await bcrypt
+          .hash(verificationCode, 10)
+          .then(async (encryptedVerificationCode) => {
+            //add pending verification
+            const pendingVerification = new PendingUserVerification({
+              phoneNumber,
+              verificationCode: encryptedVerificationCode,
+              createdAt: Date.now(),
+            });
+            await pendingVerification.save().then(async () => {
+              //send code
 
-            const sms = AfricasTalking.SMS;
-            const options = {
-              to: toPhoneNumber,
-              message: `Hello, here is your verification code : ${verificationCode}`,
-              // from: "Party finder",
-            };
+              const sms = AfricasTalking.SMS;
+              const options = {
+                to: toPhoneNumber,
+                message: `Hello, here is your verification code : ${verificationCode}`,
+                // from: "Party finder",
+              };
 
-            await sms.send(options).then((response) => {
-              res.json({
-                status: "Success",
-                messsage: `Verification code sent. Please verify your phone number to finish registration process. Code expires in 1hr`,
+              await sms.send(options).then(() => {
+                res.json({
+                  status: "Success",
+                  messsage: `Verification code sent. Please verify your phone number to finish registration process. Code expires in 1hr`,
+                });
               });
             });
           });
-        });
-    }
-  );
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while sending verification code",
+    });
+  }
 };
 
 exports.verifyCode = async (req, res) => {
