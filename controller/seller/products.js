@@ -432,7 +432,7 @@ exports.getAllProducts = async (req, res) => {
       rating,
       date,
     };
-    const products = await Product.find({}).populate("user");
+    const products = await Product.find({}).populate("user").limit(20);
     res.send(products);
 
     // if (searchTerm && !category && !subCategory && !county && !subCounty) {
