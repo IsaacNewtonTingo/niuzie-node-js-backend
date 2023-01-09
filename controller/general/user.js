@@ -297,3 +297,29 @@ exports.verifyEmail = async (req, res) => {
     });
   }
 };
+
+exports.getUser = async (req, res) => {
+  try {
+    const userID = req.params.id;
+
+    const user = await User.findOne({ _id: userID });
+    if (user) {
+      res.json({
+        status: "Success",
+        message: "User data retrieved successfully",
+        data: user,
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "User not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while retrieving user data",
+    });
+  }
+};
