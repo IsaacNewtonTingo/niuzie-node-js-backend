@@ -68,11 +68,12 @@ exports.postProduct = async (req, res) => {
         expiryDate: Date.now() + 7776000000,
       });
 
-      await newProduct.save();
+      const savedProduct = await newProduct.save();
 
       res.json({
         status: "Success",
         message: "Product posted successfully",
+        data: savedProduct._id,
       });
     } else {
       //check number of products they have
@@ -217,11 +218,12 @@ const paymentStatus = async (
               accountNumber,
             });
 
-            await newCompletedPayment.save();
+            const savedProduct = await newCompletedPayment.save();
 
             res.json({
               status: "Success",
               message: "Payment made successfully. Your product was posted",
+              data: savedProduct._id,
             });
           }
         }
