@@ -720,3 +720,41 @@ exports.deleteProduct = async (req, res) => {
     });
   }
 };
+
+exports.getUserProducts = async (req, res) => {
+  const userID = req.params.id;
+  const { productID } = req.body.productID;
+
+  try {
+    //if there is product id, remove that product from response
+    const products = await Product.find({ user: userID })
+      .populate("user")
+      .limit(20);
+
+    if (productID) {
+      const filteredProducts = products.filter(function (product) {
+        if (product._id != productID) {
+          return true;
+        }
+      });
+
+      res.json({
+        stutus: "Success",
+        message: "Products fetched successfully",
+        data: filteredProducts,
+      });
+    } else {
+      res.json({
+        stutus: "Success",
+        message: "Products fetched successfully",
+        data: products,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting user products",
+    });
+  }
+};
