@@ -723,7 +723,7 @@ exports.deleteProduct = async (req, res) => {
 
 exports.getUserProducts = async (req, res) => {
   const userID = req.params.id;
-  const { productID } = req.body;
+  const { productID } = req.query;
 
   try {
     //if there is product id, remove that product from response
