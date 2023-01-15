@@ -11,6 +11,6 @@ const router = express.Router();
 router.post("/add-category", addCategory);
 router.delete("/delete-category/:id", deleteCategory);
 router.get("/get-categories", getAllCategories);
-router.get("/get-category-products", getCategoryProducts);
+router.get("/get-category-products/:id", getCategoryProducts);
 
 module.exports = router;
