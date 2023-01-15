@@ -83,7 +83,9 @@ exports.getAllCategories = async (req, res) => {
 exports.getCategoryProducts = async (req, res) => {
   try {
     const categoryID = req.params.id;
-    const products = await Product.find({ category: categoryID });
+    const products = await Product.find({ category: categoryID })
+      .populate("user")
+      .limit(20);
     res.json({
       status: "Success",
       message: "Products retrieved successfully",
