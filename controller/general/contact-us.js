@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const ContactUs = require("../../models/general/contact-us");
 
 let transporter = nodemailer.createTransport({
   service: "gmail",
@@ -9,7 +10,14 @@ let transporter = nodemailer.createTransport({
 });
 
 exports.contactUs = async (req, res) => {
-  const { email, message, fullName } = req.body;
+  const { email, phoneNumber, message, fullName } = req.body;
+
+  const newContactUs = new ContactUs({
+    user,
+    message,
+  });
+
+  await newContactUs.save();
 
   const mailOptions = {
     from: process.env.AUTH_EMAIL,
@@ -18,6 +26,7 @@ exports.contactUs = async (req, res) => {
     html: `<p>
                 <strong>Name: ${fullName}</strong><br/>
                 <strong>Email: ${email}</strong><br/>
+                <strong>Email: ${phoneNumber}</strong><br/>
                 <strong>Message: ${message}</strong><br/>
             </p>`,
   };
@@ -25,7 +34,7 @@ exports.contactUs = async (req, res) => {
   await transporter.sendMail(mailOptions).then(() => {
     res.json({
       status: "Success",
-      message: "sent successfully",
+      message: "Sent successfully",
     });
   });
 };
