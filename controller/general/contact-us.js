@@ -26,7 +26,7 @@ exports.contactUs = async (req, res) => {
     html: `<p>
                 <strong>Name: ${fullName}</strong><br/>
                 <strong>Email: ${email}</strong><br/>
-                <strong>Email: ${phoneNumber}</strong><br/>
+                <strong>Phone number: ${phoneNumber}</strong><br/>
                 <strong>Message: ${message}</strong><br/>
             </p>`,
   };
