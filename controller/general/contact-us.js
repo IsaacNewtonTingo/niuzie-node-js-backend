@@ -10,7 +10,7 @@ let transporter = nodemailer.createTransport({
 });
 
 exports.contactUs = async (req, res) => {
-  const { email, phoneNumber, message, fullName } = req.body;
+  const { email, phoneNumber, message, fullName, user } = req.body;
 
   const newContactUs = new ContactUs({
     user,
