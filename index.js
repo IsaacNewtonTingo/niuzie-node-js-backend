@@ -25,6 +25,7 @@ setInterval(function () {
 require("./config/db");
 
 const UserRouter = require("./routes/general/user");
+const ContactUsRouter = require("./routes/general/contact-us");
 
 const CategoryRouter = require("./routes/admin/categories");
 const SubCategoryRouter = require("./routes/admin/sub-category");
@@ -34,7 +35,7 @@ const BuyerNeedsRouter = require("./routes/buyer/buyer-needs");
 
 const ProductRouter = require("./routes/seller/products");
 
-app.use("/api/user", UserRouter);
+app.use("/api/user", UserRouter, ContactUsRouter);
 
 app.use("/api/admin", ProductApprovalRouter, SubCategoryRouter, CategoryRouter);
 
