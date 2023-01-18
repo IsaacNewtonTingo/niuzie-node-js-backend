@@ -783,3 +783,6 @@ exports.getUserProducts = async (req, res) => {
     });
   }
 };
+
+//get products for a given sub category
+exports.getSubCategoryProducts = async (req, res) => {};
