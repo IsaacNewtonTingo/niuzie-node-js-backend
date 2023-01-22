@@ -405,6 +405,7 @@ exports.getProductReviews = async (req, res) => {
 
 //get all products
 exports.getAllProducts = async (req, res) => {
+  console.log("Get");
   try {
     var {
       searchTerm,
@@ -502,7 +503,7 @@ exports.getAllProducts = async (req, res) => {
           data: products,
         });
       }
-    } else if (!category && subCategory) {
+    } else if (category && subCategory) {
       const products = await Product.find({
         $and: [
           {
@@ -515,6 +516,7 @@ exports.getAllProducts = async (req, res) => {
           {
             condition: condition ? condition : { $regex: "e", $options: "i" },
           },
+          { category: category },
           { subCategory: subCategory },
         ],
       })
