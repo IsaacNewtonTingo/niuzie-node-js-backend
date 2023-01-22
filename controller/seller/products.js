@@ -381,12 +381,14 @@ exports.getProductReviews = async (req, res) => {
     //check if product is available
     const product = await Product.findOne({ _id: productID });
     if (product) {
-      const productReviews = await ProductReview.find(
-        {
-          product: productID,
-        },
-        "firstName,lastName,profilePicture"
-      ).populate("user");
+      const productReviews = await ProductReview.find({
+        product: productID,
+      })
+        .populate({
+          path: "user",
+          select: "firstName lastName profilePicture",
+        })
+        .limit(5);
       res.json({
         status: "Success",
         message: "Product reviews retrieved succesfully",
