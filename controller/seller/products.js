@@ -379,7 +379,7 @@ exports.getProductReviews = async (req, res) => {
   try {
     const productID = req.params.id;
     //check if product is available
-    const product = await Product.findOne({ _id: productID });
+    const product = await Product.findOne({ _id: productID }).populate("user");
     if (product) {
       const productReviews = await ProductReview.find({ product: productID });
       res.json({
