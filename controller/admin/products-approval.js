@@ -39,3 +39,22 @@ exports.approveProduct = async (req, res) => {
     });
   }
 };
+
+//get all products
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
+      data: error,
+    });
+  }
+};
+//get all users

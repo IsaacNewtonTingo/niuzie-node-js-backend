@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 const User = require("../../models/general/user");
 const PendingUserVerification = require("../../models/admin/pending-user-verification");
@@ -198,10 +199,13 @@ exports.login = async (req, res) => {
         });
       } else {
         //correct password
+        //send token
+        const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
         res.json({
           status: "Success",
           message: "Login successfull",
           data: { userID: user._id, admin: user.admin },
+          token: token,
         });
       }
     }
