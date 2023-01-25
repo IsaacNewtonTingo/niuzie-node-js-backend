@@ -13,6 +13,8 @@ exports.approveProduct = async (req, res) => {
           status: "Success",
           message: "Product successfully approved",
         });
+
+        //send email to the seller indicating their product is live
       } else {
         await product.updateOne({ verified: false });
 
@@ -21,6 +23,8 @@ exports.approveProduct = async (req, res) => {
           message: "Product successfully disapproved",
         });
       }
+
+      //send rejection email to seller
     } else {
       res.json({
         status: "Failed",
