@@ -6,10 +6,12 @@ const {
   getSubCategoryProducts,
 } = require("../../controller/admin/sub-category");
 
+const access = require("../../middleware/jwt");
+
 const router = express.Router();
 
-router.post("/add-sub-category", addSubCategory);
-router.delete("/delete-sub-category/:id", deleteSubCategory);
+router.post("/add-sub-category", access, addSubCategory);
+router.delete("/delete-sub-category/:id", access, deleteSubCategory);
 router.get("/get-sub-categories/:id", getCategorySubCategories);
 router.get("/get-sub-category-products", getSubCategoryProducts);
 

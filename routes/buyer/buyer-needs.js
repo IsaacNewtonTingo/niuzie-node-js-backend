@@ -7,11 +7,13 @@ const {
   getAllNeeds,
   searchNeeds,
 } = require("../../controller/buyer/buyer-needs");
+const access = require("../../middleware/jwt");
+
 const router = express.Router();
 
-router.post("/post-need", postNeed);
-router.put("/edit-need/:id", editNeed);
-router.delete("/delete-need/:id", deleteNeed);
+router.post("/post-need", access, postNeed);
+router.put("/edit-need/:id", access, editNeed);
+router.delete("/delete-need/:id", access, deleteNeed);
 router.get("/get-one-need/:id", getOneNeed);
 router.get("/get-all-needs", getAllNeeds);
 router.get("/search-needs", searchNeeds);
