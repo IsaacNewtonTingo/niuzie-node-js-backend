@@ -204,8 +204,11 @@ exports.login = async (req, res) => {
         res.json({
           status: "Success",
           message: "Login successfull",
-          data: { userID: user._id, admin: user.admin },
-          token: token,
+          data: {
+            userID: user._id,
+            admin: user.admin,
+            token: token,
+          },
         });
       }
     }
