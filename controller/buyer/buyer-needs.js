@@ -93,10 +93,10 @@ exports.editNeed = async (req, res) => {
 
 exports.getAllNeeds = async (req, res) => {
   try {
-    const list = await BuyerNeed.find({}).populate(
-      "user",
-      "firstName lastName phoneNumber profilePicture"
-    );
+    const list = await BuyerNeed.find({}).populate({
+      path: "user",
+      select: "firstName lastName phoneNumber profilePicture",
+    });
 
     res.json({
       status: "Success",
