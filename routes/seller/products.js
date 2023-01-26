@@ -18,13 +18,13 @@ const router = express.Router();
 
 router.post("/post-product", postProduct);
 router.get("/get-all-products", getAllProducts);
-router.get("/get-number/:id", checkNumberOfProducts);
-router.post("/review-product/:id", rateProduct);
-router.delete("/delete-product-review/:id", deleteProductReview);
+router.get("/get-number/:id", access, checkNumberOfProducts);
+router.post("/review-product/:id", access, rateProduct);
+router.delete("/delete-product-review/:id", access, deleteProductReview);
 router.get("/get-product-reviews/:id", getProductReviews);
 router.get("/get-one-product/:id", getOneProduct);
 router.get("/get-user-products/:id", getUserProducts);
-router.delete("/delete-product/:id", deleteProduct);
-router.put("/update-product/:id", updateProduct);
+router.delete("/delete-product/:id", access, deleteProduct);
+router.put("/update-product/:id", access, updateProduct);
 
 module.exports = router;
