@@ -95,7 +95,8 @@ exports.getAllNeeds = async (req, res) => {
   try {
     const list = await BuyerNeed.find({}).populate({
       path: "user",
-      select: "firstName lastName phoneNumber profilePicture county subCounty",
+      select:
+        "firstName lastName phoneNumber email profilePicture county subCounty",
     });
 
     res.json({
