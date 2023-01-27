@@ -10,6 +10,7 @@ const {
   deleteProduct,
   getOneProduct,
   getUserProducts,
+  getPremiumUserProducts,
 } = require("../../controller/seller/products");
 
 const access = require("../../middleware/jwt");
@@ -18,6 +19,7 @@ const router = express.Router();
 
 router.post("/post-product", postProduct);
 router.get("/get-all-products", getAllProducts);
+router.get("/get-premium-user-products", getPremiumUserProducts);
 router.get("/get-number/:id", access, checkNumberOfProducts);
 router.post("/review-product/:id", access, rateProduct);
 router.delete("/delete-product-review/:id", access, deleteProductReview);

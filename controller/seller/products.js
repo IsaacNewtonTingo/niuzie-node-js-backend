@@ -793,5 +793,29 @@ exports.getUserProducts = async (req, res) => {
   }
 };
 
-//get products for a given sub category
-exports.getSubCategoryProducts = async (req, res) => {};
+//premium users products
+exports.getPremiumUserProducts = async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .populate("user", "-password -seller -admin")
+      .populate("category", "categoryName")
+      .populate("subCategory", "subCategoryName");
+
+    const premiumUserProducts = products.filter(function (product) {
+      if (product.user.premium == true) {
+        return true;
+      }
+    });
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: premiumUserProducts,
+    });
+  } catch (error) {
+    console.log(err);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
+    });
+  }
+};
