@@ -322,8 +322,9 @@ const addReview = async (userID, rating, productID, reviewMessage, res) => {
 
 //delete review
 exports.deleteProductReview = async (req, res) => {
+  console.log("deleteing");
   try {
-    const { userID, productID } = req.body;
+    const { userID, productID } = req.query;
     const reviewID = req.params.id;
 
     const review = await ProductReview.findOneAndDelete({
@@ -395,7 +396,6 @@ exports.getProductReviews = async (req, res) => {
         data: productReviews,
       });
     } else {
-      console.log(error);
       res.json({
         status: "Failed",
         message: "Product not found",
