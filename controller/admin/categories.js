@@ -86,8 +86,9 @@ exports.getCategoryProducts = async (req, res) => {
     const products = await Product.find({
       $and: [{ category: categoryID }, { active: true }],
     })
-      .populate("user")
-      .populate("category")
+      .populate("user", "-password -seller -admin")
+      .populate("category", "categoryName")
+      .populate("subCategory", "subCategoryName")
       .limit(20);
     res.json({
       status: "Success",

@@ -764,7 +764,9 @@ exports.getUserProducts = async (req, res) => {
     const products = await Product.find({
       $and: [{ user: userID }, { active: true }],
     })
-      .populate("user")
+      .populate("user", "-password -seller -admin")
+      .populate("category", "categoryName")
+      .populate("subCategory", "subCategoryName")
       .limit(20);
 
     if (productID) {
