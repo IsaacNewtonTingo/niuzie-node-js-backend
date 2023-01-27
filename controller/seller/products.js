@@ -779,13 +779,13 @@ exports.getActiveUserProducts = async (req, res) => {
       });
 
       res.json({
-        stutus: "Success",
+        status: "Success",
         message: "Products fetched successfully",
         data: filteredProducts,
       });
     } else {
       res.json({
-        stutus: "Success",
+        status: "Success",
         message: "Products fetched successfully",
         data: products,
       });
@@ -821,13 +821,13 @@ exports.getAllUserProducts = async (req, res) => {
       });
 
       res.json({
-        stutus: "Success",
+        status: "Success",
         message: "Products fetched successfully",
         data: filteredProducts,
       });
     } else {
       res.json({
-        stutus: "Success",
+        status: "Success",
         message: "Products fetched successfully",
         data: products,
       });
