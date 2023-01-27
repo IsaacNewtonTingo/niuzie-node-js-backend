@@ -15,11 +15,8 @@ app.listen(PORT, () => {
 });
 
 setInterval(function () {
-  http.get("http://localhost:3000/");
   require("./config/deactivate-expired-products");
   require("./config/auto-send-email-to-almost-expired-products");
-
-  console.log("--------Restarted--------");
 }, 1200000);
 
 require("./config/db");
