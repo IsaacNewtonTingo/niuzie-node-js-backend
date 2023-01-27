@@ -761,7 +761,9 @@ exports.getUserProducts = async (req, res) => {
 
   try {
     //if there is product id, remove that product from response
-    const products = await Product.find({ user: userID })
+    const products = await Product.find({
+      $and: [{ user: userID }, { active: true }],
+    })
       .populate("user")
       .limit(20);
 
