@@ -11,6 +11,7 @@ const {
   getOneProduct,
   getUserProducts,
   getPremiumUserProducts,
+  getAllUserProducts,
 } = require("../../controller/seller/products");
 
 const access = require("../../middleware/jwt");
@@ -26,6 +27,7 @@ router.delete("/delete-product-review/:id", access, deleteProductReview);
 router.get("/get-product-reviews/:id", getProductReviews);
 router.get("/get-one-product/:id", getOneProduct);
 router.get("/get-user-products/:id", getUserProducts);
+router.get("/get-all-user-products/:id", getAllUserProducts);
 router.delete("/delete-product/:id", access, deleteProduct);
 router.put("/update-product/:id", access, updateProduct);
 
