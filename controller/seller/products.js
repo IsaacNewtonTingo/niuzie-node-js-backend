@@ -65,6 +65,8 @@ exports.postProduct = async (req, res) => {
         image4,
         promoted: true,
         paid: true,
+        verified: true,
+        active: true,
         expiryDate: Date.now() + 7776000000,
       });
 
@@ -755,7 +757,7 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-exports.getUserProducts = async (req, res) => {
+exports.getActiveUserProducts = async (req, res) => {
   const userID = req.params.id;
   const { productID } = req.query;
 
@@ -763,6 +765,48 @@ exports.getUserProducts = async (req, res) => {
     //if there is product id, remove that product from response
     const products = await Product.find({
       $and: [{ user: userID }, { active: true }],
+    })
+      .populate("user", "-password -seller -admin")
+      .populate("category", "categoryName")
+      .populate("subCategory", "subCategoryName")
+      .limit(20);
+
+    if (productID) {
+      const filteredProducts = products.filter(function (product) {
+        if (product._id != productID) {
+          return true;
+        }
+      });
+
+      res.json({
+        stutus: "Success",
+        message: "Products fetched successfully",
+        data: filteredProducts,
+      });
+    } else {
+      res.json({
+        stutus: "Success",
+        message: "Products fetched successfully",
+        data: products,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting user products",
+    });
+  }
+};
+
+exports.getAllUserProducts = async (req, res) => {
+  const userID = req.params.id;
+  const { productID } = req.query;
+
+  try {
+    //if there is product id, remove that product from response
+    const products = await Product.find({
+      user: userID,
     })
       .populate("user", "-password -seller -admin")
       .populate("category", "categoryName")
