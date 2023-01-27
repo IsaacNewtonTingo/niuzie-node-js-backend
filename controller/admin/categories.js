@@ -87,6 +87,7 @@ exports.getCategoryProducts = async (req, res) => {
       $and: [{ category: categoryID }, { active: true }],
     })
       .populate("user")
+      .populate("category")
       .limit(20);
     res.json({
       status: "Success",
