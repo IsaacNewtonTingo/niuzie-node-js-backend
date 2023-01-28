@@ -123,8 +123,7 @@ const paymentStatus = async (
 
             const newPremium = new PremiumUsers({
               user: userID,
-              amountPaid,
-              expiryDate,
+              amountPaid: amount,
             });
 
             await newPremium.save();
@@ -134,7 +133,7 @@ const paymentStatus = async (
               extraProduct: null,
               productPromotion: null,
               premium: true,
-              amountPaid,
+              amountPaid: amount,
               accountNumber,
             });
 

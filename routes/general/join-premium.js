@@ -5,6 +5,6 @@ const access = require("../../middleware/jwt");
 
 const router = express.Router();
 
-router.post("/join-premium", access, joinPremium);
+router.post("/join-premium/:id", access, joinPremium);
 
 module.exports = router;
