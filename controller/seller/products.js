@@ -9,6 +9,7 @@ const {
   CompletedProductPayment,
 } = require("../../models/admin/completed-product-payment");
 const { ProductReview } = require("../../models/seller/product-reviews");
+const SaveProduct = require("../../models/general/save-product");
 
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
@@ -864,6 +865,42 @@ exports.getPremiumUserProducts = async (req, res) => {
     res.json({
       status: "Failed",
       message: "An error occured while getting products",
+    });
+  }
+};
+
+//save products
+exports.saveProduct = async (req, res) => {
+  try {
+    const productID = req.params.id;
+    const { userID } = req.body;
+
+    //check if product exists
+    const product = await Product.findOne({ _id: productID });
+    if (product) {
+      //save
+      const newSavedProduct = new SaveProduct({
+        user: userID,
+        product: productID,
+      });
+
+      const saved = await newSavedProduct.save();
+
+      res.json({
+        status: "Success",
+        message: "Product saved successfully",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Product not found",
+      });
+    }
+  } catch (error) {
+    console.log(err);
+    res.json({
+      status: "Failed",
+      message: "An error occured while saving product",
     });
   }
 };
