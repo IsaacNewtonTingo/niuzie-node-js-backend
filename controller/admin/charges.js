@@ -71,7 +71,7 @@ exports.getOneCharge = async (req, res) => {
 
 exports.editCharge = async (req, res) => {
   const chargeID = req.params.id;
-  const { amount, userID } = request.body;
+  const { amount, userID } = req.body;
   try {
     const user = await User.findOne({ _id: userID });
     if (user.admin !== true) {
@@ -80,14 +80,10 @@ exports.editCharge = async (req, res) => {
         message: "You don't have rights to perform this operation",
       });
     } else {
-      const update = await Charges.findOneAndUpdate(
-        { _id: chargeID },
-        { amount }
-      );
+      await Charges.findOneAndUpdate({ _id: chargeID }, { amount });
       res.json({
         status: "Success",
         message: "Updated successfully",
-        data: update,
       });
     }
   } catch (error) {
