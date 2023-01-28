@@ -13,6 +13,7 @@ const {
   getAllUserProducts,
   getActiveUserProducts,
   saveProduct,
+  getSavedProducts,
 } = require("../../controller/seller/products");
 
 const access = require("../../middleware/jwt");
@@ -32,5 +33,6 @@ router.get("/get-all-user-products/:id", getAllUserProducts);
 router.delete("/delete-product/:id", access, deleteProduct);
 router.put("/update-product/:id", access, updateProduct);
 router.post("/save-product/:id", access, saveProduct);
+router.get("/get-saved-products/:id", access, getSavedProducts);
 
 module.exports = router;

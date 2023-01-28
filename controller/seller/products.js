@@ -878,18 +878,35 @@ exports.saveProduct = async (req, res) => {
     //check if product exists
     const product = await Product.findOne({ _id: productID });
     if (product) {
-      //save
-      const newSavedProduct = new SaveProduct({
-        user: userID,
-        product: productID,
+      //check if saved
+      const check = await SaveProduct.findOne({
+        $and: [{ user: userID }, { product: productID }],
       });
 
-      const saved = await newSavedProduct.save();
+      if (!check) {
+        //not saved
+        const newSavedProduct = new SaveProduct({
+          user: userID,
+          product: productID,
+        });
 
-      res.json({
-        status: "Success",
-        message: "Product saved successfully",
-      });
+        await newSavedProduct.save();
+
+        res.json({
+          status: "Success",
+          message: "Product saved successfully",
+        });
+      } else {
+        //saved so unsave
+        await SaveProduct.deleteOne({
+          $and: [{ user: userID }, { product: productID }],
+        });
+
+        res.json({
+          status: "Success",
+          message: "Product unsaved successfully",
+        });
+      }
     } else {
       res.json({
         status: "Failed",
@@ -901,6 +918,27 @@ exports.saveProduct = async (req, res) => {
     res.json({
       status: "Failed",
       message: "An error occured while saving product",
+    });
+  }
+};
+
+exports.getSavedProducts = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const products = await SaveProduct.find({ user: userID }).populate({
+      path: "product",
+      populate: { path: "user" },
+    });
+    res.json({
+      status: "Success",
+      message: "Saved products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    console.log(err);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting saved products",
     });
   }
 };
