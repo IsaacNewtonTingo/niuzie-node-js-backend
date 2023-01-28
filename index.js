@@ -32,6 +32,8 @@ const BuyerNeedsRouter = require("./routes/buyer/buyer-needs");
 
 const ProductRouter = require("./routes/seller/products");
 
+const JoinPremiumRouter = require("./routes/general/join-premium");
+
 app.use("/api/user", UserRouter, ContactUsRouter);
 
 app.use("/api/admin", ProductApprovalRouter, SubCategoryRouter, CategoryRouter);
@@ -39,3 +41,5 @@ app.use("/api/admin", ProductApprovalRouter, SubCategoryRouter, CategoryRouter);
 app.use("/api/product", ProductRouter);
 
 app.use("/api/buyer-needs", BuyerNeedsRouter);
+
+app.use("/api/premium", JoinPremiumRouter);

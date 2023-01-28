@@ -7,6 +7,7 @@ const PendingUserVerification = require("../../models/admin/pending-user-verific
 const {
   EmailVerification,
 } = require("../../models/admin/pending-email-verifications");
+const { Payments } = require("../../models/general/user-payments");
 
 let transporter = nodemailer.createTransport({
   service: "gmail",
@@ -328,6 +329,25 @@ exports.getUser = async (req, res) => {
     res.json({
       status: "Failed",
       message: "An error occured while retrieving user data",
+    });
+  }
+};
+
+//get all my payments
+exports.getMyPayments = async (req, res) => {
+  const userID = req.body.id;
+  try {
+    const payments = await Payments.find({ user: userID });
+    res.json({
+      status: "Failed",
+      message: "Payments retrieved successfully",
+      data: payments,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting payments",
     });
   }
 };

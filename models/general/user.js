@@ -19,6 +19,10 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    endOfPremium: {
+      type: Date,
+      default: null,
+    },
     admin: {
       type: Boolean,
       default: false,

@@ -16,5 +16,6 @@ router.post("/verify-code", access, verifyCode);
 router.post("/login", login);
 router.post("/verify-email", access, verifyEmail);
 router.get("/get-user-data/:id", access, getUser);
+router.get("/get-user-payments/:id", access, getUser);
 
 module.exports = router;
