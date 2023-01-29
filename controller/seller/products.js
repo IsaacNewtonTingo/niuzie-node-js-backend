@@ -941,7 +941,10 @@ exports.saveProduct = async (req, res) => {
 exports.getSavedProducts = async (req, res) => {
   try {
     const userID = req.params.id;
-    const products = await SaveProduct.find({ user: userID }).populate({
+
+    const products = await SaveProduct.find({
+      user: userID,
+    }).populate({
       path: "product",
       populate: { path: "user" },
     });
@@ -951,10 +954,35 @@ exports.getSavedProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    console.log(err);
+    console.log(error);
     res.json({
       status: "Failed",
       message: "An error occured while getting saved products",
+    });
+  }
+};
+
+exports.getOneSavedProduct = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const { productID } = req.query;
+
+    const product = await SaveProduct.findOne({
+      $and: [{ user: userID }, { product: productID }],
+    }).populate({
+      path: "product",
+      populate: { path: "user" },
+    });
+    res.json({
+      status: "Success",
+      message: "Saved products retrieved successfully",
+      data: product ? true : false,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting saved product",
     });
   }
 };
