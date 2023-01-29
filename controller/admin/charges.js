@@ -54,7 +54,7 @@ exports.getCharge = async (req, res) => {
 exports.getOneCharge = async (req, res) => {
   const chargeID = req.params.id;
   try {
-    const charge = await Charges.find({ _id: chargeID });
+    const charge = await Charges.findOne({ _id: chargeID });
     res.json({
       status: "Success",
       message: "Retrieved successfully",
