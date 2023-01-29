@@ -749,7 +749,7 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const productID = req.params.id;
-    const { userID } = req.body;
+    const { userID } = req.query;
 
     const product = await Product.findOneAndDelete({
       $and: [{ user: userID }, { _id: productID }],
