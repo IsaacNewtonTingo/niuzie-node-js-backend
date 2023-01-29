@@ -10,6 +10,7 @@ const {
 } = require("../../models/admin/completed-product-payment");
 const { ProductReview } = require("../../models/seller/product-reviews");
 const SaveProduct = require("../../models/general/save-product");
+const { Payments } = require("../../models/general/user-payments");
 
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
@@ -126,6 +127,7 @@ exports.postProduct = async (req, res) => {
                 });
 
                 paymentStatus(
+                  userID,
                   accountNumber,
                   amount,
                   phoneNumber,
@@ -181,6 +183,7 @@ exports.postProduct = async (req, res) => {
 };
 
 const paymentStatus = async (
+  userID,
   accountNumber,
   amount,
   phoneNumber,
@@ -215,6 +218,7 @@ const paymentStatus = async (
             const newSavedProduct = await newProduct.save();
 
             const newCompletedPayment = new CompletedProductPayment({
+              user: userID,
               product: newSavedProduct,
               amount,
               phoneNumber,
@@ -222,6 +226,17 @@ const paymentStatus = async (
             });
 
             const savedProduct = await newCompletedPayment.save();
+
+            const newPayment = new Payments({
+              user: userID,
+              extraProduct: newSavedProduct,
+              productPromotion: null,
+              premium: false,
+              amountPaid: amount,
+              accountNumber,
+            });
+
+            await newPayment.save();
 
             res.json({
               status: "Success",
