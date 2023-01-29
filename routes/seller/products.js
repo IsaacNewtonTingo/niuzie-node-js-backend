@@ -21,7 +21,7 @@ const access = require("../../middleware/jwt");
 
 const router = express.Router();
 
-router.post("/post-product", postProduct);
+router.post("/post-product", access, postProduct);
 router.get("/get-all-products", getAllProducts);
 router.get("/get-premium-user-products", getPremiumUserProducts);
 router.get("/get-number/:id", access, checkNumberOfProducts);
