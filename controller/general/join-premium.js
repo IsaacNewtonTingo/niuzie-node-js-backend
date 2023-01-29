@@ -131,6 +131,7 @@ const paymentStatus = async (
 
             const newPayment = new Payments({
               user: userID,
+              phoneNumber,
               extraProduct: null,
               productPromotion: null,
               premium: true,

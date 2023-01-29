@@ -7,6 +7,7 @@ const PaymentsSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    phoneNumber: Number,
     extraProduct: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
