@@ -4,9 +4,12 @@ exports.getPayments = async (req, res) => {
   try {
     const userID = req.params.id;
 
-    const payments = await Payments.find({ user: userID }).sort({
-      createdAt: -1,
-    });
+    const payments = await Payments.find({ user: userID })
+      .populate("extraProduct")
+      .populate("productPromotion")
+      .sort({
+        createdAt: -1,
+      });
 
     res.json({
       status: "Success",
