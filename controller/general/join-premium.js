@@ -124,6 +124,7 @@ const paymentStatus = async (
             const newPremium = new PremiumUsers({
               user: userID,
               amountPaid: amount,
+              active: true,
             });
 
             await newPremium.save();

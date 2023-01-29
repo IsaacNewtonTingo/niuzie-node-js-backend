@@ -12,6 +12,10 @@ const PremiumUsersSchema = new Schema(
       type: Date,
       default: Date.now() + 604800000,
     },
+    active: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

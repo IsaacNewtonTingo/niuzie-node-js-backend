@@ -30,6 +30,7 @@ const BuyerNeedsRouter = require("./routes/buyer/buyer-needs");
 const ProductRouter = require("./routes/seller/products");
 const JoinPremiumRouter = require("./routes/general/join-premium");
 const ChargeRouter = require("./routes/admin/charge");
+const PaymentsRouter = require("./routes/general/user-payments");
 
 app.use("/api/user", UserRouter, ContactUsRouter);
 app.use(
@@ -42,3 +43,4 @@ app.use(
 app.use("/api/product", ProductRouter);
 app.use("/api/buyer-needs", BuyerNeedsRouter);
 app.use("/api/premium", JoinPremiumRouter);
+app.use("/api/payments", PaymentsRouter);
