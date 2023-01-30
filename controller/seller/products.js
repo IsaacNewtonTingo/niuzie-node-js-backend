@@ -12,6 +12,8 @@ const { ProductReview } = require("../../models/seller/product-reviews");
 const SaveProduct = require("../../models/general/save-product");
 const { Payments } = require("../../models/general/user-payments");
 
+const cloudinary = require("../../utils/cloudinary");
+
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
   try {
@@ -984,5 +986,17 @@ exports.getOneSavedProduct = async (req, res) => {
       status: "Failed",
       message: "An error occured while getting saved product",
     });
+  }
+};
+
+exports.upload = async (req, res) => {
+  const image = req;
+  try {
+    // const result = await cloudinary.uploader.upload(image);
+
+    res.send(image);
+  } catch (error) {
+    res.send(error);
+    console.log(error);
   }
 };
