@@ -15,12 +15,14 @@ const {
   saveProduct,
   getSavedProducts,
   getOneSavedProduct,
+  upload,
 } = require("../../controller/seller/products");
 
 const access = require("../../middleware/jwt");
 
 const router = express.Router();
 
+router.post("/upload", upload);
 router.post("/post-product", access, postProduct);
 router.get("/get-all-products", getAllProducts);
 router.get("/get-premium-user-products", getPremiumUserProducts);
