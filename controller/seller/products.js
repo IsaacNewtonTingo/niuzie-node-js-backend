@@ -754,6 +754,12 @@ exports.deleteProduct = async (req, res) => {
     const product = await Product.findOneAndDelete({
       $and: [{ user: userID }, { _id: productID }],
     });
+
+    //find if saved and delete
+
+    await SaveProduct.deleteMany({ product: productID });
+    await ProductReview.deleteMany({ product: productID });
+    //find all reviews and delete
     if (product) {
       res.json({
         status: "Success",
