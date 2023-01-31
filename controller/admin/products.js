@@ -35,7 +35,11 @@ exports.approveProduct = async (req, res) => {
         const categoryName = product.category.categoryName;
 
         if (product.verified == false) {
-          await product.updateOne({ verified: true, active: true });
+          await product.updateOne({
+            verified: true,
+            active: true,
+            reviewed: true,
+          });
 
           //create notification to that specific user
           const newNotification = new Notification({
@@ -77,7 +81,11 @@ exports.approveProduct = async (req, res) => {
           }
         } else {
           //create notification
-          await product.updateOne({ verified: false });
+          await product.updateOne({
+            verified: false,
+            active: false,
+            reviewed: false,
+          });
 
           const newNotification = new Notification({
             user: productOwnerID,
@@ -115,7 +123,13 @@ exports.approveProduct = async (req, res) => {
 //get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const products = await Product.find({})
+      .populate({
+        path: "user",
+        select: "firstName lastName phoneNumber premium county subCounty",
+      })
+      .populate("category")
+      .populate("subCategory");
     res.json({
       status: "Success",
       message: "Products retrieved successfully",
