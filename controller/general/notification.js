@@ -10,7 +10,18 @@ exports.getNotifications = async (req, res) => {
       //user found get their notifications
       const notifications = await Notification.find({
         user: userID,
-      }).sort({ createdAt: -1 });
+      })
+        .populate({
+          path: "product",
+          select:
+            "user productName condition description price rating image1 image2 image3 image4 promoted",
+          populate: {
+            path: "user",
+            select:
+              "firstName lastName phoneNumber profilePicture county subCounty premium admin",
+          },
+        })
+        .sort({ createdAt: -1 });
 
       res.json({
         status: "Success",
