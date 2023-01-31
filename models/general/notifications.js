@@ -7,9 +7,14 @@ const NotificationSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    category: {
+    notificationCategory: {
       type: String,
-      default: "General",
+      default: null,
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
     },
     title: String,
     message: String,

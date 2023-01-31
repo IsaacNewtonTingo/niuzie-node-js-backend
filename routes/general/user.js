@@ -3,7 +3,6 @@ const {
   signup,
   verifyCode,
   login,
-  verifyEmail,
   getUser,
   getMyPayments,
 } = require("../../controller/general/user");
