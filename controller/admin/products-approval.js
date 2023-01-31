@@ -1,3 +1,4 @@
+const { Notification } = require("../../models/general/notifications");
 const { Product } = require("../../models/seller/products");
 
 exports.approveProduct = async (req, res) => {
@@ -6,6 +7,8 @@ exports.approveProduct = async (req, res) => {
     const product = await Product.findOne({ _id: productID });
 
     if (product) {
+      (productName = product.productName), (productOwnerID = product.user);
+
       if (product.verified == false) {
         await product.updateOne({ verified: true, active: true });
 
@@ -15,16 +18,39 @@ exports.approveProduct = async (req, res) => {
         });
 
         //send email to the seller indicating their product is live
+
+        //create notification
+        const newNotification = new Notification({
+          user: productOwnerID,
+          category: "Product approval",
+          title: "Product approved",
+          message: `Hello, your product (${productName}) has been successfully approved`,
+          image: null,
+          read: false,
+        });
+
+        await newNotification.save();
       } else {
+        //send rejection email to seller
+        //create notification
         await product.updateOne({ verified: false });
+
+        const newNotification = new Notification({
+          user: productOwnerID,
+          category: "Product approval",
+          title: "Product approved",
+          message: `Hello, your product (${productName}) has been successfully approved`,
+          image: null,
+          read: false,
+        });
+
+        await newNotification.save();
 
         res.json({
           status: "Success",
           message: "Product successfully disapproved",
         });
       }
-
-      //send rejection email to seller
     } else {
       res.json({
         status: "Failed",
