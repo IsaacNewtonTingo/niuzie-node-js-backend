@@ -25,20 +25,17 @@ const credentials = {
 const AfricasTalking = require("africastalking")(credentials);
 
 exports.signup = async (req, res) => {
-  var { phoneNumber, email } = req.body;
+  var { phoneNumber } = req.body;
 
-  email = email.trim();
   phoneNumber = phoneNumber.toString().trim();
 
   try {
     //check if phone number is already registered
-    await User.findOne({
-      $or: [{ email, phoneNumber }],
-    }).then(async (response) => {
+    await User.findOne({ phoneNumber }).then(async (response) => {
       if (response) {
         res.json({
           status: "Failed",
-          message: "Phone number or email provided is already registered",
+          message: "Phone number provided is already registered",
         });
       } else {
         //send verification code
@@ -109,7 +106,6 @@ exports.verifyCode = async (req, res) => {
       firstName,
       lastName,
       phoneNumber,
-      email,
       password,
       county,
       subCounty,
@@ -143,7 +139,6 @@ exports.verifyCode = async (req, res) => {
                     firstName,
                     lastName,
                     phoneNumber,
-                    email,
                     password: hashedPassword,
                     profilePicture: "",
                     county: "",
@@ -152,9 +147,7 @@ exports.verifyCode = async (req, res) => {
 
                   await newUser.save().then(async () => {
                     //delete record
-                    await pendingRecordResponse.delete().then(() => {
-                      sendEmailVerificationCode(email, res);
-                    });
+                    await pendingRecordResponse.delete();
                   });
                 });
               } else {
@@ -219,90 +212,6 @@ exports.login = async (req, res) => {
     res.json({
       status: "Failed",
       message: "Something went wrong",
-    });
-  }
-};
-
-//send email verification code
-const sendEmailVerificationCode = async (email, res) => {
-  try {
-    const emailVerificationtionCode = Math.floor(
-      1000 + Math.random() * 9000
-    ).toString();
-
-    const hashedCode = await bcrypt.hash(emailVerificationtionCode, 10);
-
-    const newPendingRecord = new EmailVerification({
-      email,
-      verificationCode: hashedCode,
-    });
-
-    await newPendingRecord.save();
-
-    const mailOptions = {
-      from: process.env.AUTH_EMAIL,
-      to: email,
-      subject: "Verify your email",
-      html: `<p><strong>${emailVerificationtionCode}</strong></p>`,
-    };
-
-    await transporter.sendMail(mailOptions).then(() => {
-      res.json({
-        status: "Success",
-        message: "Phone number verified successfully",
-      });
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      status: "Failed",
-      message: "Something went wrong",
-    });
-  }
-};
-
-//verify email
-exports.verifyEmail = async (req, res) => {
-  try {
-    var { email, verificationCode, userID } = req.body;
-    //check if email is already verified
-    const user = await User.findOne({ _id: userID });
-    if (user.emailVerified == true) {
-      res.json({
-        status: "Failed",
-        message: "Email already verified",
-      });
-    } else {
-      const verification = await EmailVerification.findOne({ email });
-      if (!verification) {
-        res.json({
-          status: "Failed",
-          message: "Verification code has expired. Please request another",
-        });
-      } else {
-        const hashedCode = verification.verificationCode;
-        const validCode = bcrypt.compare(verificationCode, hashedCode);
-
-        if (validCode) {
-          await User.findOneAndUpdate({ email }, { emailVerified: true });
-          verification.deleteOne({ email });
-          res.json({
-            status: "Success",
-            message: "Email verified successfully",
-          });
-        } else {
-          res.json({
-            status: "Failed",
-            message: "Invalid verification code",
-          });
-        }
-      }
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({
-      status: "Failed",
-      message: "An error occured while verifying email",
     });
   }
 };
