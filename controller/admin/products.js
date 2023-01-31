@@ -123,7 +123,13 @@ exports.approveProduct = async (req, res) => {
 //get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({});
+    const products = await Product.find({})
+      .populate({
+        path: "user",
+        select: "firstName lastName phoneNumber premium county subCounty",
+      })
+      .populate("category")
+      .populate("subCategory");
     res.json({
       status: "Success",
       message: "Products retrieved successfully",
