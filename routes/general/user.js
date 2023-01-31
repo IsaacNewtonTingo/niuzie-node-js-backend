@@ -1,4 +1,5 @@
 const express = require("express");
+const { getNotifications } = require("../../controller/general/notification");
 const {
   signup,
   verifyCode,
@@ -16,5 +17,6 @@ router.post("/verify-code", verifyCode);
 router.post("/login", login);
 router.get("/get-user-data/:id", access, getUser);
 router.get("/get-user-payments/:id", access, getMyPayments);
+router.get("/get-notifications/:id", access, getNotifications);
 
 module.exports = router;
