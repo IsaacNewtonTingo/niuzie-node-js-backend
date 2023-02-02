@@ -84,7 +84,7 @@ exports.approveProduct = async (req, res) => {
           await product.updateOne({
             verified: false,
             active: false,
-            reviewed: false,
+            reviewed: true,
           });
 
           const newNotification = new Notification({
