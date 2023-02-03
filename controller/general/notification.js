@@ -55,6 +55,11 @@ exports.readNotif = async (req, res) => {
       },
       { read: true }
     );
+
+    res.json({
+      status: "Success",
+      message: "Read successfully",
+    });
   } catch (error) {
     console.log(error);
     res.json({
