@@ -20,6 +20,8 @@ exports.getNotifications = async (req, res) => {
             select:
               "firstName lastName phoneNumber profilePicture county subCounty premium admin",
           },
+          populate: "category",
+          populate: "subCategory",
         })
         .sort({ createdAt: -1 });
 
