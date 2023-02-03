@@ -21,6 +21,6 @@ router.post("/login", login);
 router.get("/get-user-data/:id", access, getUser);
 router.get("/get-user-payments/:id", access, getMyPayments);
 router.get("/get-notifications/:id", access, getNotifications);
-router.get("/read-notification/:id", access, readNotif);
+router.put("/read-notification/:id", access, readNotif);
 
 module.exports = router;
