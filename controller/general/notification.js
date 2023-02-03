@@ -42,3 +42,24 @@ exports.getNotifications = async (req, res) => {
     });
   }
 };
+
+//edit state
+exports.readNotif = async (req, res) => {
+  try {
+    const { userID } = req.query;
+    const notificationID = reqparams.id;
+
+    await Notification.findOneAndUpdate(
+      {
+        $and: [{ user: userID }, { _id: notificationID }],
+      },
+      { read: true }
+    );
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while updating notification",
+    });
+  }
+};
