@@ -47,7 +47,7 @@ exports.getNotifications = async (req, res) => {
 exports.readNotif = async (req, res) => {
   try {
     const { userID } = req.query;
-    const notificationID = reqparams.id;
+    const notificationID = req.params.id;
 
     await Notification.findOneAndUpdate(
       {
