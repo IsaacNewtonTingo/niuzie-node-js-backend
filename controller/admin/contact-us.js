@@ -31,3 +31,32 @@ exports.getMessages = async (req, res) => {
     });
   }
 };
+
+//read msg
+exports.readMessage = async (req, res) => {
+  const { userID } = req.query;
+  const messageID = req.params.id;
+
+  try {
+    const user = await User.findOne({ _id: userID });
+    if (user.admin == true) {
+      await ContactUs.findOneAndUpdate({ _id: messageID }, { read: true });
+
+      res.json({
+        status: "Success",
+        message: "Messages read successfully",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Anauthorized operation",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured updating message",
+    });
+  }
+};

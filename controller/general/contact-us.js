@@ -25,7 +25,6 @@ exports.contactUs = async (req, res) => {
     subject: "Customer support",
     html: `<p>
                 <strong>Name: ${fullName}</strong><br/>
-                <strong>Email: ${email}</strong><br/>
                 <strong>Phone number: ${phoneNumber}</strong><br/>
                 <strong>Message: ${message}</strong><br/>
             </p>`,
