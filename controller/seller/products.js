@@ -683,8 +683,8 @@ exports.getOneProduct = async (req, res) => {
         select:
           "firstName lastName phoneNumber profilePicture county subCounty",
       })
-      .populate({ Path: "category" })
-      .populate({ Path: "subCategory" });
+      .populate({ path: "category" })
+      .populate({ path: "subCategory" });
     if (product) {
       res.json({
         status: "Success",
