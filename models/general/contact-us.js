@@ -8,6 +8,10 @@ const ContactUsSchema = new Schema(
       ref: "User",
     },
     message: String,
+    read: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
