@@ -677,7 +677,14 @@ exports.getAllProducts = async (req, res) => {
 exports.getOneProduct = async (req, res) => {
   try {
     const productID = req.params.id;
-    const product = await Product.findOne({ _id: productID });
+    const product = await Product.findOne({ _id: productID })
+      .populate({
+        path: "user",
+        select:
+          "firstName lastName phoneNumber profilePicture county subCounty",
+      })
+      .populate({ Path: "category" })
+      .populate({ Path: "subCategory" });
     if (product) {
       res.json({
         status: "Success",
