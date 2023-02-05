@@ -24,7 +24,7 @@ const UserSchema = new Schema(
     },
     seller: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   { timestamps: true }

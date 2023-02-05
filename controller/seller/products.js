@@ -433,7 +433,6 @@ exports.getProductReviews = async (req, res) => {
 
 //get all products
 exports.getAllProducts = async (req, res) => {
-  console.log("Get");
   try {
     var {
       searchTerm,
@@ -445,25 +444,17 @@ exports.getAllProducts = async (req, res) => {
 
       price,
       rating,
-      date,
+      createdAt,
+      promoted,
 
       limit,
       pageNumber,
     } = req.query;
 
-    // searchTerm = searchTerm.trim();
-
-    price = price ? price : -1;
-    rating = rating ? rating : 1;
-
     limit = 20;
     pageNumber = 0;
 
-    var sort = {
-      price,
-      rating,
-      date,
-    };
+    sort = { price, rating, createdAt, promoted };
 
     if (category && !subCategory) {
       const products = await Product.find({
@@ -475,13 +466,17 @@ exports.getAllProducts = async (req, res) => {
             ],
           },
           { verified: true },
+          { active: true },
           {
             condition: condition ? condition : { $regex: "e", $options: "i" },
           },
           { category: category },
         ],
       })
-        .populate("user", "-password -seller -admin")
+        .populate(
+          "user",
+          "firstName lastName phoneNumber county subCounty premium"
+        )
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
         .sort(sort)
@@ -541,6 +536,8 @@ exports.getAllProducts = async (req, res) => {
             ],
           },
           { verified: true },
+          { active: true },
+
           {
             condition: condition ? condition : { $regex: "e", $options: "i" },
           },
@@ -548,7 +545,10 @@ exports.getAllProducts = async (req, res) => {
           { subCategory: subCategory },
         ],
       })
-        .populate("user", "-password -seller -admin")
+        .populate(
+          "user",
+          "firstName lastName phoneNumber county subCounty premium"
+        )
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
         .sort(sort)
@@ -608,12 +608,17 @@ exports.getAllProducts = async (req, res) => {
             ],
           },
           { verified: true },
+          { active: true },
+
           {
             condition: condition ? condition : { $regex: "e", $options: "i" },
           },
         ],
       })
-        .populate("user", "-password -seller -admin")
+        .populate(
+          "user",
+          "firstName lastName phoneNumber county subCounty premium"
+        )
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
         .sort(sort)
