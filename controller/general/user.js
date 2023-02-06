@@ -8,6 +8,7 @@ const {
   EmailVerification,
 } = require("../../models/admin/pending-email-verifications");
 const { Payments } = require("../../models/general/user-payments");
+const ForgotPassword = require("../../models/general/reset-pass");
 
 let transporter = nodemailer.createTransport({
   service: "gmail",
@@ -76,7 +77,7 @@ const sendVerificationCode = async ({ phoneNumber }, res) => {
               const sms = AfricasTalking.SMS;
               const options = {
                 to: toPhoneNumber,
-                message: `Hello, here is your verification code : ${verificationCode}`,
+                message: `${verificationCode}`,
                 // from: "Party finder",
               };
 
@@ -141,8 +142,8 @@ exports.verifyCode = async (req, res) => {
                     phoneNumber,
                     password: hashedPassword,
                     profilePicture: "",
-                    county: "",
-                    subCounty: "",
+                    county,
+                    subCounty,
                   });
 
                   await newUser.save().then(async () => {
@@ -212,6 +213,99 @@ exports.login = async (req, res) => {
     res.json({
       status: "Failed",
       message: "Something went wrong",
+    });
+  }
+};
+
+//forget password
+exports.sendForgotPasswordOtp = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    //check if number exists
+    const user = await User.findOne({ phoneNumber });
+    if (user) {
+      await ForgotPassword.findOneAndDelete({ phoneNumber });
+
+      let verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+      const hashedPassword = await bcrypt.hash(verificationCode, 10);
+
+      const newForgot = new ForgotPassword({
+        phoneNumber,
+        verificationCode: hashedPassword,
+      });
+
+      await newForgot.save();
+
+      const sms = AfricasTalking.SMS;
+      const options = {
+        to: phoneNumber,
+        message: `${verificationCode}`,
+        // from: "Party finder",
+      };
+
+      await sms.send(options);
+      res.json({
+        status: "Success",
+        message: "OTP sent sent successfully. Code expires in 1 minute",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "User with the given phone number doesn't exist",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while sending otp",
+    });
+  }
+};
+
+//verify otp
+exports.changePassword = async (req, res) => {
+  try {
+    const { phoneNumber, otp, password } = req.body;
+    const existingRecord = await ForgotPassword.findOne({ phoneNumber });
+    if (existingRecord) {
+      const storedOtp = existingRecord.verificationCode;
+
+      const correctOtp = await bcrypt.compare(otp.toString(), storedOtp);
+      if (correctOtp) {
+        //update password
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.findOneAndUpdate(
+          { phoneNumber },
+          { password: hashedPassword }
+        );
+
+        //delete record
+        await existingRecord.deleteOne();
+
+        res.json({
+          status: "Success",
+          message: "Password changed successfully",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Invalid otp entered",
+        });
+      }
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Invalid otp entered",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while verifying otp",
     });
   }
 };
