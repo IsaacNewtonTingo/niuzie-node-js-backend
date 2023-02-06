@@ -2,6 +2,7 @@ const CategoryNotification = require("../../models/general/category-notification
 const { Notification } = require("../../models/general/notifications");
 const User = require("../../models/general/user");
 const { Product } = require("../../models/seller/products");
+const io = require("../../socket");
 
 exports.approveProduct = async (req, res) => {
   try {
@@ -53,6 +54,8 @@ exports.approveProduct = async (req, res) => {
           });
 
           await newNotification.save();
+
+          io.emit("New", "Places");
 
           //notification for all user who have subscribed to a category
           //first find the users
