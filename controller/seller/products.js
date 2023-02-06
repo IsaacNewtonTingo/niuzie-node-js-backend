@@ -454,7 +454,12 @@ exports.getAllProducts = async (req, res) => {
     limit = 20;
     pageNumber = 0;
 
-    sort = { price, rating, createdAt, promoted };
+    sort = {
+      price,
+      rating,
+      createdAt,
+      promoted,
+    };
 
     if (category && !subCategory) {
       const products = await Product.find({
