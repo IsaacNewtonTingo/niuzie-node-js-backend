@@ -239,7 +239,7 @@ exports.sendForgotPasswordOtp = async (req, res) => {
 
       const sms = AfricasTalking.SMS;
       const options = {
-        to: phoneNumber,
+        to: `+${phoneNumber}`,
         message: `${verificationCode}`,
         // from: "Party finder",
       };
