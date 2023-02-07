@@ -48,6 +48,7 @@ const JoinPremiumRouter = require("./routes/general/join-premium");
 const ChargeRouter = require("./routes/admin/charge");
 const PaymentsRouter = require("./routes/general/user-payments");
 const ContactUsMessagesRouter = require("./routes/admin/contact-us");
+const AdminPaymentRouterRouter = require("./routes/admin/payments");
 
 app.use("/api/user", UserRouter, ContactUsRouter);
 app.use(
@@ -56,7 +57,8 @@ app.use(
   SubCategoryRouter,
   CategoryRouter,
   ChargeRouter,
-  ContactUsMessagesRouter
+  ContactUsMessagesRouter,
+  AdminPaymentRouterRouter
 );
 app.use("/api/product", ProductRouter);
 app.use("/api/buyer-needs", BuyerNeedsRouter);
