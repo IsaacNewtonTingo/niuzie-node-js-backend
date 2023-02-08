@@ -3,6 +3,7 @@ const { storeToken } = require("../../controller/general/device-token");
 const {
   getNotifications,
   readNotif,
+  readAllNotifications,
 } = require("../../controller/general/notification");
 const {
   signup,
@@ -28,6 +29,7 @@ router.get("/get-user-data/:id", access, getUser);
 router.get("/get-user-payments/:id", access, getMyPayments);
 router.get("/get-notifications/:id", access, getNotifications);
 router.put("/read-notification/:id", access, readNotif);
+router.put("/read-all-notifications/:id", access, readAllNotifications);
 router.post("/store-device-token", access, storeToken);
 
 module.exports = router;

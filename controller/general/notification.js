@@ -1,6 +1,7 @@
 const { Notification } = require("../../models/general/notifications");
 const User = require("../../models/general/user");
 
+//get notis
 exports.getNotifications = async (req, res) => {
   try {
     const userID = req.params.id;
@@ -28,10 +29,17 @@ exports.getNotifications = async (req, res) => {
 
         .sort({ createdAt: -1 });
 
+      const unreadNotfis = notifications.filter(
+        (notification) => !notification.read
+      );
+
       res.json({
         status: "Success",
         message: "Notifications retrieved successfully",
-        data: notifications,
+        data: {
+          notifications,
+          unread: unreadNotfis.length,
+        },
       });
     } else {
       res.json({
@@ -64,6 +72,26 @@ exports.readNotif = async (req, res) => {
     res.json({
       status: "Success",
       message: "Read successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while updating notification",
+    });
+  }
+};
+
+//read all
+exports.readAllNotifications = async (req, res) => {
+  try {
+    const userID = req.params.id;
+
+    await Notification.updateMany({ user: userID }, { read: true });
+
+    res.json({
+      status: "Success",
+      message: "All notifications marked as read",
     });
   } catch (error) {
     console.log(error);

@@ -59,16 +59,15 @@ exports.approveProduct = async (req, res) => {
           //push the notification---------------------------------------------------------
 
           let savedPushTokens = await DeviceToken.find({
-            $and: [{ user: userID }, { active: true }],
+            $and: [{ user: productOwnerID }, { active: true }],
           });
+
+          const deviceTokens = savedPushTokens.map((token) => token.token);
 
           const notificationTitle = "Product approved";
           const notificationBody = `Hello, your product (${productName}) has been successfully approved`;
-          sendNotification(
-            savedPushTokens,
-            notificationTitle,
-            notificationBody
-          );
+
+          sendNotification(deviceTokens, notificationTitle, notificationBody);
 
           //notification for all user who have subscribed to a category
           //first find the users
@@ -90,7 +89,7 @@ exports.approveProduct = async (req, res) => {
 
             await Notification.insertMany(newCategoryNotif);
             //send push notifications to this users--------------------------------------------
-            sendNotification(1, 2);
+            // sendNotification(1, 2);
 
             res.json({
               status: "Success",
@@ -118,7 +117,17 @@ exports.approveProduct = async (req, res) => {
           await newNotification.save();
 
           //send push notification------------------------------------------------------------
-          sendNotification(1, 2);
+
+          let savedPushTokens = await DeviceToken.find({
+            $and: [{ user: productOwnerID }, { active: true }],
+          });
+
+          const deviceTokens = savedPushTokens.map((token) => token.token);
+
+          const notificationTitle = "Product disapproved";
+          const notificationBody = `Hello, your product (${productName}) has been disapproved`;
+
+          sendNotification(deviceTokens, notificationTitle, notificationBody);
 
           res.json({
             status: "Success",
