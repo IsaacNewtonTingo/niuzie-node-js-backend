@@ -58,11 +58,17 @@ exports.approveProduct = async (req, res) => {
           await newNotification.save();
           //push the notification---------------------------------------------------------
 
-          // const userDeviceToken = await DeviceToken.find({
-          //   $and: [{ user: userID }, { active: true }],
-          // });
-          // let savedPushTokens = [];
-          // sendNotification(savedPushTokens);
+          let savedPushTokens = await DeviceToken.find({
+            $and: [{ user: userID }, { active: true }],
+          });
+
+          const notificationTitle = "Product approved";
+          const notificationBody = `Hello, your product (${productName}) has been successfully approved`;
+          sendNotification(
+            savedPushTokens,
+            notificationTitle,
+            notificationBody
+          );
 
           //notification for all user who have subscribed to a category
           //first find the users
