@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const http = require("http");
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+// const { Server } = require("socket.io");
+// const io = new Server(server);
 
 const cors = require("cors");
 const bodyParser = require("body-parser").json;
@@ -15,16 +15,16 @@ require("dotenv").config();
 
 const PORT = process.env.PORT;
 
-io.on("connection", (socket) => {
-  console.log(`${socket.id} user just connected!`);
+// io.on("connection", (socket) => {
+//   console.log(`${socket.id} user just connected!`);
 
-  io.emit("Fuck", "Fuck me");
+//   io.emit("Fuck", "Fuck me");
 
-  socket.on("disconnect", () => {
-    socket.disconnect();
-    console.log("A user disconnected");
-  });
-});
+//   socket.on("disconnect", () => {
+//     socket.disconnect();
+//     console.log("A user disconnected");
+//   });
+// });
 
 server.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
