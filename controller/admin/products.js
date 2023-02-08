@@ -1,8 +1,10 @@
 const CategoryNotification = require("../../models/general/category-notifications");
 const { Notification } = require("../../models/general/notifications");
 const User = require("../../models/general/user");
+
 const { Product } = require("../../models/seller/products");
-const io = require("../../socket");
+const { sendNotification } = require("../../helpers/notification");
+const { DeviceToken } = require("../../models/general/device-token");
 
 exports.approveProduct = async (req, res) => {
   try {
@@ -54,8 +56,13 @@ exports.approveProduct = async (req, res) => {
           });
 
           await newNotification.save();
+          //push the notification---------------------------------------------------------
 
-          io.emit("New", "Places");
+          // const userDeviceToken = await DeviceToken.find({
+          //   $and: [{ user: userID }, { active: true }],
+          // });
+          // let savedPushTokens = [];
+          // sendNotification(savedPushTokens);
 
           //notification for all user who have subscribed to a category
           //first find the users
@@ -76,6 +83,8 @@ exports.approveProduct = async (req, res) => {
             }));
 
             await Notification.insertMany(newCategoryNotif);
+            //send push notifications to this users--------------------------------------------
+            sendNotification(1, 2);
 
             res.json({
               status: "Success",
@@ -101,6 +110,9 @@ exports.approveProduct = async (req, res) => {
           });
 
           await newNotification.save();
+
+          //send push notification------------------------------------------------------------
+          sendNotification(1, 2);
 
           res.json({
             status: "Success",
