@@ -2,7 +2,7 @@ const { Expo } = require("expo-server-sdk");
 // Initialize Expo
 const expo = new Expo();
 
-async function sendNotification(pushTokens, title, body) {
+async function sendNotification(pushTokens, title, body, product) {
   let notifications = [];
   for (let pushToken of pushTokens) {
     // Check that all push tokens are valid Expo push tokens
@@ -16,7 +16,7 @@ async function sendNotification(pushTokens, title, body) {
       sound: "default",
       title: title,
       body: body,
-      data: { body },
+      data: { product },
     });
   }
 
