@@ -1,6 +1,10 @@
 const express = require("express");
 const { storeToken } = require("../../controller/general/device-token");
 const {
+  editProfile,
+  updateRecords,
+} = require("../../controller/general/edit-user");
+const {
   getNotifications,
   readNotif,
   readAllNotifications,
@@ -17,6 +21,7 @@ const {
 } = require("../../controller/general/user");
 
 const access = require("../../middleware/jwt");
+const { verifyOTP } = require("../../middleware/verif-otp");
 
 const router = express.Router();
 
@@ -31,5 +36,7 @@ router.get("/get-notifications/:id", access, getNotifications);
 router.put("/read-notification/:id", access, readNotif);
 router.put("/read-all-notifications/:id", access, readAllNotifications);
 router.post("/store-device-token", access, storeToken);
+router.post("/edit-profile/:id", access, editProfile);
+router.put("/update-profile/:id", access, verifyOTP, updateRecords);
 
 module.exports = router;
