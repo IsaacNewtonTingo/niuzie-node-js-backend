@@ -4,15 +4,14 @@ const { sendOTP } = require("../../helpers/otp");
 const { Otp } = require("../../models/general/otps");
 
 exports.editProfile = async (req, res) => {
-  const { firstName, lastName, phoneNumber, password, county, subCounty } =
-    req.body;
+  const { phoneNumber, password } = req.body;
 
   const userID = req.params.id;
   const user = await User.findOne({ _id: userID });
   if (user) {
     //check if password is correct
     const storedPassword = user.password;
-    const correctPassword = bcrypt.compare(password, storedPassword);
+    const correctPassword = await bcrypt.compare(password, storedPassword);
 
     if (correctPassword) {
       //generate otp
@@ -20,10 +19,11 @@ exports.editProfile = async (req, res) => {
       //find existing and delete
       await Otp.findOneAndDelete({ phoneNumber });
       //store otp
+      const hashedOtp = await bcrypt.hash(otp, 10);
       await Otp.create({
         user: userID,
         phoneNumber,
-        otp,
+        otp: hashedOtp,
       });
       //send otp
       sendOTP(phoneNumber, otp, res);
