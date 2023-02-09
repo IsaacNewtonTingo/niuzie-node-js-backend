@@ -67,7 +67,12 @@ exports.approveProduct = async (req, res) => {
           const notificationTitle = "Product approved";
           const notificationBody = `Hello, your product (${productName}) has been successfully approved`;
 
-          sendNotification(deviceTokens, notificationTitle, notificationBody);
+          sendNotification(
+            deviceTokens,
+            notificationTitle,
+            notificationBody,
+            product
+          );
 
           //notification for all user who have subscribed to a category
           //first find the users
@@ -127,7 +132,12 @@ exports.approveProduct = async (req, res) => {
           const notificationTitle = "Product disapproved";
           const notificationBody = `Hello, your product (${productName}) has been disapproved`;
 
-          sendNotification(deviceTokens, notificationTitle, notificationBody);
+          sendNotification(
+            deviceTokens,
+            notificationTitle,
+            notificationBody,
+            product
+          );
 
           res.json({
             status: "Success",
