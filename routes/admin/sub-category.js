@@ -10,7 +10,7 @@ const access = require("../../middleware/jwt");
 
 const router = express.Router();
 
-router.post("/add-sub-category", access, addSubCategory);
+router.post("/add-sub-category/:id", access, addSubCategory);
 router.delete("/delete-sub-category/:id", access, deleteSubCategory);
 router.get("/get-sub-categories/:id", getCategorySubCategories);
 router.get("/get-sub-category-products", getSubCategoryProducts);
