@@ -1,27 +1,38 @@
 const { Product } = require("../../models/seller/products");
 const { SubCategory } = require("../../models/admin/sub-category");
+const User = require("../../models/general/user");
 
 exports.addSubCategory = async (req, res) => {
   try {
-    const { subCategoryName, category } = req.body;
-    //check if category already exists
+    const category = req.params.id;
+    const { subCategoryName, userID } = req.body;
 
-    const subCategory = await SubCategory.findOne({ subCategoryName });
-    if (subCategory) {
+    //check user
+    const user = await User.findOne({ _id: userID });
+    if (user.admin == true) {
+      //check if subcategory already exists
+      const subCategory = await SubCategory.findOne({ subCategoryName });
+      if (subCategory) {
+        res.json({
+          status: "Failed",
+          message: "Subcategory with the given name already exists",
+        });
+      } else {
+        const newSubCategory = new SubCategory({
+          subCategoryName,
+          category,
+        });
+
+        await newSubCategory.save();
+        res.json({
+          status: "Success",
+          message: "Sub category added successfully",
+        });
+      }
+    } else {
       res.json({
         status: "Failed",
-        message: "Category with the given name already exists",
-      });
-    } else {
-      const newSubCategory = new SubCategory({
-        subCategoryName,
-        category,
-      });
-
-      await newSubCategory.save();
-      res.json({
-        status: "Success",
-        message: "Sub category added successfully",
+        message: "Anauthorized operation",
       });
     }
   } catch (error) {
