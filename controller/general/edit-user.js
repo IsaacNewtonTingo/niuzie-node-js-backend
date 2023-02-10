@@ -80,3 +80,44 @@ exports.updateRecords = async (req, res) => {
     });
   }
 };
+
+//change password
+exports.updatePassword = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await User.findOne({ _id: userID });
+    if (user) {
+      const storedPassword = user.password;
+      const correctPassword = await bcrypt.compare(oldPassword, storedPassword);
+
+      if (correctPassword) {
+        //hash new
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        //update
+        await user.updateOne({ password: hashedNewPassword });
+        res.json({
+          status: "Success",
+          message: "You have successfully changed your password",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Your old password is incorrect",
+        });
+      }
+    } else {
+      res.json({
+        status: "Failed",
+        message: "User not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while updating password",
+    });
+  }
+};
