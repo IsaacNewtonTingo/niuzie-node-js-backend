@@ -52,13 +52,20 @@ exports.editProfile = async (req, res) => {
 
 //verify otp
 exports.updateRecords = async (req, res) => {
-  const { firstName, lastName, phoneNumber, county, subCounty } = req.body;
+  const {
+    firstName,
+    lastName,
+    profilePicture,
+    phoneNumber,
+    county,
+    subCounty,
+  } = req.body;
   const userID = req.params.id;
 
   try {
     await User.findOneAndUpdate(
       { _id: userID },
-      { firstName, lastName, phoneNumber, county, subCounty }
+      { firstName, lastName, profilePicture, phoneNumber, county, subCounty }
     );
 
     res.json({
