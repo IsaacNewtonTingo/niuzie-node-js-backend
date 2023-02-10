@@ -48,20 +48,31 @@ exports.addSubCategory = async (req, res) => {
 exports.deleteSubCategory = async (req, res) => {
   try {
     const subCategoryID = req.params.id;
-    //check if category already exists
+    const { userID } = req.query;
 
-    const subCategory = await SubCategory.findOneAndDelete({
-      _id: subCategoryID,
-    });
-    if (subCategory) {
-      res.json({
-        status: "Success",
-        message: "Sub category deleted successfully",
+    //check user
+    const user = await User.findOne({ _id: userID });
+    if (user.admin == true) {
+      //check if subcategory already exists
+
+      const subCategory = await SubCategory.findOneAndDelete({
+        _id: subCategoryID,
       });
+      if (subCategory) {
+        res.json({
+          status: "Success",
+          message: "Sub category deleted successfully",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Sub category doesn't exist",
+        });
+      }
     } else {
       res.json({
         status: "Failed",
-        message: "Sub category doesn't exist",
+        message: "Anauthorized operation",
       });
     }
   } catch (error) {
