@@ -3,6 +3,7 @@ const { storeToken } = require("../../controller/general/device-token");
 const {
   editProfile,
   updateRecords,
+  updatePassword,
 } = require("../../controller/general/edit-user");
 const {
   getNotifications,
@@ -38,5 +39,6 @@ router.put("/read-all-notifications/:id", access, readAllNotifications);
 router.post("/store-device-token", access, storeToken);
 router.post("/edit-profile/:id", access, editProfile);
 router.put("/update-profile/:id", access, verifyOTP, updateRecords);
+router.put("/update-password/:id", access, updatePassword);
 
 module.exports = router;
