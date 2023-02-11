@@ -971,7 +971,20 @@ exports.getSavedProducts = async (req, res) => {
       user: userID,
     }).populate({
       path: "product",
-      populate: { path: "user" },
+      populate: {
+        path: "user",
+        select:
+          "firstName lastName profilePicture phoneNumber admin premium county subCounty",
+      },
+      populate: {
+        path: "product",
+        select:
+          "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate",
+        populate: [
+          { path: "category", select: "categoryName" },
+          { path: "subCategory", select: "subCategoryName" },
+        ],
+      },
     });
     res.json({
       status: "Success",
