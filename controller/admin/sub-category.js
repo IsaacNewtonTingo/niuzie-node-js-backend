@@ -84,6 +84,48 @@ exports.deleteSubCategory = async (req, res) => {
   }
 };
 
+exports.updateSubCategory = async (req, res) => {
+  try {
+    const subCategoryID = req.params.id;
+    const { userID, subCategoryName } = req.body;
+
+    //check user
+    const user = await User.findOne({ _id: userID });
+    if (user.admin == true) {
+      //check if subcategory already exists
+
+      const subCategory = await SubCategory.findOneAndUpdate(
+        {
+          _id: subCategoryID,
+        },
+        { subCategoryName }
+      );
+      if (subCategory) {
+        res.json({
+          status: "Success",
+          message: "Sub category updated successfully",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Sub category doesn't exist",
+        });
+      }
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Anauthorized operation",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while deleting sub category",
+    });
+  }
+};
+
 //get all sub categories of a category
 exports.getCategorySubCategories = async (req, res) => {
   try {
