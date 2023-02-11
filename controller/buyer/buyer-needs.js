@@ -165,3 +165,22 @@ exports.searchNeeds = async (req, res) => {
     });
   }
 };
+
+exports.getUserNeeds = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const needs = await BuyerNeed.find({ user: userID });
+
+    res.json({
+      status: "Success",
+      message: "Users needs retrieved successfully",
+      data: needs,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting user needs",
+    });
+  }
+};
