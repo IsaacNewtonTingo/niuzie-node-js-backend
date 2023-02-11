@@ -169,7 +169,9 @@ exports.searchNeeds = async (req, res) => {
 exports.getUserNeeds = async (req, res) => {
   try {
     const userID = req.params.id;
-    const needs = await BuyerNeed.find({ user: userID });
+    const needs = await BuyerNeed.find({ user: userID }).sort({
+      createdAt: -1,
+    });
 
     res.json({
       status: "Success",
