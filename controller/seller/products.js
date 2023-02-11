@@ -969,14 +969,13 @@ exports.getSavedProducts = async (req, res) => {
 
     const products = await SaveProduct.find({
       user: userID,
-    }).populate({
-      path: "product",
-      populate: {
+    })
+      .populate({
         path: "user",
         select:
           "firstName lastName profilePicture phoneNumber admin premium county subCounty",
-      },
-      populate: {
+      })
+      .populate({
         path: "product",
         select:
           "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate",
@@ -984,8 +983,8 @@ exports.getSavedProducts = async (req, res) => {
           { path: "category", select: "categoryName" },
           { path: "subCategory", select: "subCategoryName" },
         ],
-      },
-    });
+      });
+
     res.json({
       status: "Success",
       message: "Saved products retrieved successfully",
