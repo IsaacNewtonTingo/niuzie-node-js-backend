@@ -485,8 +485,9 @@ exports.getAllProducts = async (req, res) => {
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
         .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+
+        .limit(parseInt(limit))
+        .skip(parseInt(pageNumber) * parseInt(limit));
 
       if (county && !subCounty) {
         const filteredProducts = products.filter(function (product) {
@@ -557,8 +558,9 @@ exports.getAllProducts = async (req, res) => {
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
         .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+
+        .limit(parseInt(limit))
+        .skip(parseInt(pageNumber) * parseInt(limit));
 
       if (county && !subCounty) {
         const filteredProducts = products.filter(function (product) {
@@ -627,8 +629,9 @@ exports.getAllProducts = async (req, res) => {
         .populate("category", "categoryName")
         .populate("subCategory", "subCategoryName")
         .sort(sort)
-        .limit(limit)
-        .skip(pageNumber * limit);
+
+        .limit(parseInt(limit))
+        .skip(parseInt(pageNumber) * parseInt(limit));
 
       if (county && !subCounty) {
         const filteredProducts = products.filter(function (product) {
