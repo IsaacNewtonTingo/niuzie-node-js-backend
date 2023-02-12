@@ -16,6 +16,7 @@ const {
   getSavedProducts,
   getOneSavedProduct,
   upload,
+  getSellerProfile,
 } = require("../../controller/seller/products");
 
 const access = require("../../middleware/jwt");
@@ -38,5 +39,6 @@ router.put("/update-product/:id", access, updateProduct);
 router.post("/save-product/:id", access, saveProduct);
 router.get("/get-saved-products/:id", access, getSavedProducts);
 router.get("/get-one-saved-product/:id", access, getOneSavedProduct);
+router.get("/get-seller-profile/:id", getSellerProfile);
 
 module.exports = router;

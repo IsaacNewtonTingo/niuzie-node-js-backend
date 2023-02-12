@@ -1038,3 +1038,25 @@ exports.upload = async (req, res) => {
     console.log(error);
   }
 };
+
+exports.getSellerProfile = async (req, res) => {
+  try {
+    const userID = req.params.id;
+
+    const user = await User.findOne(
+      { _id: userID },
+      "firstName lastName phoneNumber profilePicture county subCounty"
+    );
+    res.json({
+      status: "Success",
+      message: "Seller data retrieved successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting seller data",
+    });
+  }
+};
