@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const CategoryNotificationSchema = new Schema(
+const CategorySubscribersSchema = new Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,8 +15,8 @@ const CategoryNotificationSchema = new Schema(
   { timestamps: true }
 );
 
-const CategoryNotification = mongoose.model(
-  "CategoryNotification",
-  CategoryNotificationSchema
+const CategorySubscribers = mongoose.model(
+  "CategorySubscribers",
+  CategorySubscribersSchema
 );
-module.exports = CategoryNotification;
+module.exports = CategorySubscribers;
