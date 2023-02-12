@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../models/general/user");
@@ -9,14 +8,6 @@ const {
 } = require("../../models/admin/pending-email-verifications");
 const { Payments } = require("../../models/general/user-payments");
 const ForgotPassword = require("../../models/general/reset-pass");
-
-let transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.AUTH_EMAIL,
-    pass: process.env.AUTH_PASS,
-  },
-});
 
 const credentials = {
   apiKey: process.env.AFRICAS_TALKING_API_KEY,

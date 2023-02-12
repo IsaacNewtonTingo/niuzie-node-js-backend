@@ -9,28 +9,38 @@ exports.editProfile = async (req, res) => {
   const userID = req.params.id;
   const user = await User.findOne({ _id: userID });
   if (user) {
-    //check if password is correct
-    const storedPassword = user.password;
-    const correctPassword = await bcrypt.compare(password, storedPassword);
+    //check if phone number exists
+    const existingPhoneNumber = await User.findOne({ phoneNumber });
+    if (!existingPhoneNumber || existingPhoneNumber._id == userID) {
+      //check if password is correct
+      const storedPassword = user.password;
+      const correctPassword = await bcrypt.compare(password, storedPassword);
 
-    if (correctPassword) {
-      //generate otp
-      const otp = Math.floor(1000 + Math.random() * 9000).toString();
-      //find existing and delete
-      await Otp.findOneAndDelete({ phoneNumber });
-      //store otp
-      const hashedOtp = await bcrypt.hash(otp, 10);
-      await Otp.create({
-        user: userID,
-        phoneNumber,
-        otp: hashedOtp,
-      });
-      //send otp
-      sendOTP(phoneNumber, otp, res);
+      if (correctPassword) {
+        //generate otp
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+        //find existing and delete
+        await Otp.findOneAndDelete({ phoneNumber });
+        //store otp
+        const hashedOtp = await bcrypt.hash(otp, 10);
+        await Otp.create({
+          user: userID,
+          phoneNumber,
+          otp: hashedOtp,
+        });
+        //send otp
+        sendOTP(phoneNumber, otp, res);
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Incorrect password",
+        });
+      }
     } else {
       res.json({
         status: "Failed",
-        message: "Incorrect password",
+        message:
+          "The provided phone number is already registered toa nother account",
       });
     }
   } else {
