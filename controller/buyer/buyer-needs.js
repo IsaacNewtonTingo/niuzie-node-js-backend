@@ -32,7 +32,7 @@ exports.postNeed = async (req, res) => {
 
 exports.deleteNeed = async (req, res) => {
   try {
-    const { userID } = req.body;
+    const { userID } = req.query;
     const needID = req.params.id;
 
     const need = await BuyerNeed.findOneAndDelete({
