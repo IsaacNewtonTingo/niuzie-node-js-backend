@@ -889,7 +889,7 @@ exports.getAllUserProducts = async (req, res) => {
 //premium users products
 exports.getPremiumUserProducts = async (req, res) => {
   try {
-    const products = await Product.find({})
+    const products = await Product.find({ active: true })
       .populate("user", "-password -seller -admin")
       .populate("category", "categoryName")
       .populate("subCategory", "subCategoryName");
