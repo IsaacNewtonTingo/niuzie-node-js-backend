@@ -150,6 +150,11 @@ exports.verifyCode = async (req, res) => {
                     //delete record
                     await pendingRecordResponse.delete();
                   });
+
+                  res.json({
+                    status: "Success",
+                    message: "Code verified successfully. Please login.",
+                  });
                 });
               } else {
                 //wrong code
