@@ -57,6 +57,7 @@ exports.subscribe = async (req, res) => {
         res.json({
           status: "Success",
           message: "Successfully unsubscribed from this category",
+          data: false,
         });
       } else {
         await CategorySubscribers.create({
@@ -67,6 +68,7 @@ exports.subscribe = async (req, res) => {
         res.json({
           status: "Success",
           message: "Successfully subscribed to this category",
+          data: true,
         });
       }
     } else {
