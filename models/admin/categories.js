@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const CategprySchema = new Schema(
+const CategorySchema = new Schema(
   {
     categoryName: String,
     categoryImage: String,
@@ -9,4 +9,4 @@ const CategprySchema = new Schema(
   { timestamps: true }
 );
 
-exports.Category = mongoose.model("Category", CategprySchema);
+exports.Category = mongoose.model("Category", CategorySchema);

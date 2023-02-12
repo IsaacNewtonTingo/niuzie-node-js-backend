@@ -1,10 +1,10 @@
-const CategoryNotification = require("../../models/general/category-notifications");
 const { Notification } = require("../../models/general/notifications");
 const User = require("../../models/general/user");
 
 const { Product } = require("../../models/seller/products");
 const { sendNotification } = require("../../helpers/notification");
 const { DeviceToken } = require("../../models/general/device-token");
+const CategorySubscribers = require("../../models/general/category-subscribers");
 
 exports.approveProduct = async (req, res) => {
   try {
@@ -76,7 +76,7 @@ exports.approveProduct = async (req, res) => {
 
           //notification for all user who have subscribed to a category
           //first find the users
-          const categorySubscribers = await CategoryNotification.find({
+          const categorySubscribers = await CategorySubscribers.find({
             category,
           });
 
