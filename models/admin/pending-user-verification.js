@@ -11,7 +11,7 @@ const PendingUserVerificationSchema = new Schema(
 
 PendingUserVerificationSchema.index(
   { createdAt: 1 },
-  { expireAfterSeconds: 600 }
+  { expireAfterSeconds: 300 }
 );
 
 const UserVerification = mongoose.model(

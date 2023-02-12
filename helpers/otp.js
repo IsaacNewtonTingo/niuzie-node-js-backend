@@ -18,7 +18,7 @@ async function sendOTP(phoneNumber, otp, res) {
   await sms.send(options).then(() => {
     res.json({
       status: "Success",
-      message: `OTP sent to ${phoneNumber}`,
+      message: `OTP sent to ${phoneNumber}. The code expires in 5 minutes.`,
     });
   });
 }

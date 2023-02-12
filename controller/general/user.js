@@ -84,7 +84,7 @@ const sendVerificationCode = async ({ phoneNumber }, res) => {
               await sms.send(options).then(() => {
                 res.json({
                   status: "Success",
-                  messsage: `Verification code sent. Please verify your phone number to finish registration process. Code expires in 1hr`,
+                  messsage: `Verification code sent. Please verify your phone number to finish registration process. Code expires in 5 minutes`,
                 });
               });
             });
@@ -252,7 +252,7 @@ exports.sendForgotPasswordOtp = async (req, res) => {
       await sms.send(options);
       res.json({
         status: "Success",
-        message: "OTP sent sent successfully. Code expires in 1 minute",
+        message: "OTP sent sent successfully. Code expires in 5 minute",
       });
     } else {
       res.json({
