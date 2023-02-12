@@ -751,6 +751,9 @@ exports.updateProduct = async (req, res) => {
         image2,
         image3,
         image4,
+        active: false,
+        verified: false,
+        reviewed: false,
       });
 
       res.json({
