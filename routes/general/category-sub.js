@@ -9,6 +9,6 @@ const {
 const access = require("../../middleware/jwt");
 
 router.post("/subscribe/:id", access, subscribe);
-router.post("/check-subscriber/:id", access, checkIfSubd);
+router.post("/check-subscriber/:id", checkIfSubd);
 
 module.exports = router;
