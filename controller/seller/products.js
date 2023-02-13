@@ -1,5 +1,4 @@
 const { Product } = require("../../models/seller/products");
-const User = require("../../models/general/user");
 const { v4: uuidv4 } = require("uuid");
 const request = require("request");
 const {
@@ -8,9 +7,13 @@ const {
 const {
   CompletedProductPayment,
 } = require("../../models/admin/completed-product-payment");
-const { ProductReview } = require("../../models/seller/product-reviews");
+
+const User = require("../../models/general/user");
 const SaveProduct = require("../../models/general/save-product");
+
+const { ProductReview } = require("../../models/seller/product-reviews");
 const { Payments } = require("../../models/general/user-payments");
+const { Charges } = require("../../models/admin/charges");
 
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
@@ -33,6 +36,156 @@ exports.checkNumberOfProducts = async (req, res) => {
   }
 };
 
+//submit products so that they are pending
+exports.submitProduct = async (req, res) => {
+  try {
+    const {
+      userID,
+      phoneNumber,
+      productName,
+      category,
+      subCategory,
+      condition,
+      description,
+      price,
+      image1,
+      image2,
+      image3,
+      image4,
+    } = req.body;
+    const product = await Product.create({
+      user: userID,
+      productName,
+      category,
+      subCategory,
+      condition,
+      description,
+      price,
+      image1,
+      image2,
+      image3,
+      image4,
+      paid: true,
+      pending: true,
+      expiryDate: Date.now() + 86400000,
+      expiryNotificationDate: Date.now() + 82800000,
+    });
+
+    res.json({
+      status: "Success",
+      message: "Product submitted successfully",
+      data: {
+        productID: product._id,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while submitting product",
+    });
+  }
+};
+
+//remove a pending product
+exports.removePendingProduct = async (req, res) => {
+  try {
+    const { userID } = req.query;
+    const productID = req.params.id;
+
+    const product = await Product.findOne({
+      $and: [{ _id: productID }, { pending: true }],
+    });
+
+    if (product) {
+      if (product.user == userID) {
+        await product.deleteOne();
+        res.json({
+          status: "Success",
+          message: "Product successfully removed",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Anauthorized operation",
+        });
+      }
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Product not found",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while removing product",
+    });
+  }
+};
+
+//get pending products
+exports.getPendingProducts = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const pendingProducts = await Product.find({
+      $and: [{ user: userID }, { pending: true }],
+    })
+      .populate(
+        "user",
+        "firstName lastName phoneNumber county subCounty premium"
+      )
+      .populate("category", "categoryName")
+      .populate("subCategory", "subCategoryName")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: pendingProducts,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting pending products",
+    });
+  }
+};
+
+//post many products
+exports.insertManyProducts = async (req, res) => {
+  try {
+    const { products, userID, phoneNumber, accountNumber } = req.body;
+    await Product.insertMany(products);
+
+    //add transaction record
+    //store record in db
+    await Payments.create({
+      user: userID,
+      phoneNumber,
+      extraProduct: null,
+      productPromotion: null,
+      premium: false,
+      accountNumber: accountNumber,
+      amountPaid: amount,
+    });
+
+    res.json({
+      status: "Success",
+      message: "Products posted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while posting products",
+    });
+  }
+};
+
+//finally post product
 exports.postProduct = async (req, res) => {
   try {
     const {
@@ -67,8 +220,10 @@ exports.postProduct = async (req, res) => {
         image4,
         promoted: true,
         paid: true,
+        pending: false,
         verified: true,
         active: true,
+        reviewed: false,
         expiryDate: Date.now() + 7776000000,
       });
 
@@ -123,6 +278,7 @@ exports.postProduct = async (req, res) => {
                   image3,
                   image4,
                   paid: true,
+                  pending: false,
                   expiryDate: Date.now() + 7776000000,
                 });
 
@@ -162,6 +318,7 @@ exports.postProduct = async (req, res) => {
           image2,
           image3,
           image4,
+          pending: false,
           expiryDate: Date.now() + 7776000000,
         });
 
@@ -182,6 +339,7 @@ exports.postProduct = async (req, res) => {
   }
 };
 
+//checking payment
 const paymentStatus = async (
   userID,
   accountNumber,
@@ -981,8 +1139,7 @@ exports.getSavedProducts = async (req, res) => {
 
     const products = await SaveProduct.find({
       user: userID,
-    })
-    .populate({
+    }).populate({
       path: "product",
       select:
         "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate active",
