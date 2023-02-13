@@ -982,20 +982,20 @@ exports.getSavedProducts = async (req, res) => {
     const products = await SaveProduct.find({
       user: userID,
     })
-      .populate({
-        path: "user",
-        select:
-          "firstName lastName profilePicture phoneNumber admin premium county subCounty",
-      })
-      .populate({
-        path: "product",
-        select:
-          "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate active",
-        populate: [
-          { path: "category", select: "categoryName" },
-          { path: "subCategory", select: "subCategoryName" },
-        ],
-      });
+    .populate({
+      path: "product",
+      select:
+        "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate active",
+      populate: [
+        {
+          path: "user",
+          select:
+            "firstName lastName profilePicture phoneNumber admin premium county subCounty",
+        },
+        { path: "category", select: "categoryName" },
+        { path: "subCategory", select: "subCategoryName" },
+      ],
+    });
 
     const activeSavedProducts = products.filter(
       (product) => product.product.active
