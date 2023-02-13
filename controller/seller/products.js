@@ -129,15 +129,18 @@ exports.removePendingProduct = async (req, res) => {
 exports.getPendingProducts = async (req, res) => {
   try {
     const userID = req.params.id;
-    const pendingProducts = await Product.find({
-      $and: [{ user: userID }, { pending: true }],
-    })
+    const pendingProducts = await Product.find(
+      {
+        $and: [{ user: userID }, { pending: true }],
+      },
+      "-expiryDate -expiryNotificationDate -tenDayExpirationEmailSent -updatedAt -paid -reviewed -verified -active"
+    )
       .populate(
         "user",
         "firstName lastName phoneNumber county subCounty premium"
       )
-      .populate("category", "categoryName")
-      .populate("subCategory", "subCategoryName")
+      .populate({ path: "category", select: "categoryName" })
+      .populate({ path: "subCategory", select: "subCategoryName" })
       .sort({ createdAt: -1 });
 
     res.json({
