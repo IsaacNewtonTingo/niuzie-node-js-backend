@@ -17,13 +17,22 @@ const {
   getOneSavedProduct,
   upload,
   getSellerProfile,
+  submitProduct,
+  removePendingProduct,
+  getPendingProducts,
+  insertManyProducts,
 } = require("../../controller/seller/products");
 
 const access = require("../../middleware/jwt");
+const { makePayment } = require("../../middleware/make-payment");
 
 const router = express.Router();
 
 router.post("/upload", upload);
+router.post("/submit-product", access, submitProduct);
+router.put("/remove-product/:id", access, removePendingProduct);
+router.get("/get-pending-products/:id", access, getPendingProducts);
+router.post("/insert-many-products", access, makePayment, insertManyProducts);
 router.post("/post-product", access, postProduct);
 router.get("/get-all-products", getAllProducts);
 router.get("/get-premium-user-products", getPremiumUserProducts);

@@ -35,6 +35,10 @@ const ProductSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    pending: {
+      type: Boolean,
+      default: true,
+    },
     reviewed: {
       type: Boolean,
       default: false,
