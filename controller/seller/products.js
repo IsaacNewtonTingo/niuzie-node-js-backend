@@ -990,17 +990,19 @@ exports.getSavedProducts = async (req, res) => {
       .populate({
         path: "product",
         select:
-          "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate",
+          "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate active",
         populate: [
           { path: "category", select: "categoryName" },
           { path: "subCategory", select: "subCategoryName" },
         ],
       });
 
+      const activeSavedProducts=products.filter((product)=>product.active==true)
+
     res.json({
       status: "Success",
       message: "Saved products retrieved successfully",
-      data: products,
+      data: activeSavedProducts,
     });
   } catch (error) {
     console.log(error);
