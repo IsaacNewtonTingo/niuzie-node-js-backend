@@ -997,7 +997,9 @@ exports.getSavedProducts = async (req, res) => {
         ],
       });
 
-      const activeSavedProducts=products.filter((product)=>product.active==true)
+    const activeSavedProducts = products.filter(
+      (product) => product.product.active
+    );
 
     res.json({
       status: "Success",
