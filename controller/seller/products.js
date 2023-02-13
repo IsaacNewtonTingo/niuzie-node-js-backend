@@ -155,27 +155,41 @@ exports.getPendingProducts = async (req, res) => {
 };
 
 //post many products
-exports.insertManyProducts = async (req, res) => {
+exports.publishManyProducts = async (req, res) => {
   try {
-    const { products, userID, phoneNumber, accountNumber } = req.body;
-    await Product.insertMany(products);
+    const { userID, phoneNumber, amount, accountNumber } = req.body;
+    const charge = await Charges.findOne({ name: "Extra product payment" });
+    const perProductAmount = charge.amount; //1 product payment
 
-    //add transaction record
-    //store record in db
-    await Payments.create({
-      user: userID,
-      phoneNumber,
-      extraProduct: null,
-      productPromotion: null,
-      premium: false,
-      accountNumber: accountNumber,
-      amountPaid: amount,
+    const productsToUpdate = await Product.find({
+      $and: [{ user: userID }, { pending: true }],
     });
+    const numberOfProducts = productsToUpdate.length;
+    const requiredAmount = perProductAmount * numberOfProducts;
 
-    res.json({
-      status: "Success",
-      message: "Products posted successfully",
-    });
+    if (amount == requiredAmount) {
+      //add transaction record
+      //store record in db
+      await Payments.create({
+        user: userID,
+        phoneNumber,
+        extraProduct: null,
+        productPromotion: null,
+        premium: false,
+        accountNumber: accountNumber,
+        amountPaid: amount,
+      });
+
+      res.json({
+        status: "Success",
+        message: "Products posted successfully",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "Someting doesn't look right with the amount paid",
+      });
+    }
   } catch (error) {
     console.log(error);
     res.json({

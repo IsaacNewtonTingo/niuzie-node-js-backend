@@ -3,10 +3,10 @@ const { Payments } = require("../models/general/user-payments");
 
 exports.makePayment = async (req, res, next) => {
   try {
-    const { userID, phoneNumber, amount, accountNumber } = req.body;
+    const { phoneNumber, amount, accountNumber } = req.body;
 
     //initiate stk push
-    const url = process.env.TINYPESA_ENDPOINT;
+    const url = `https://tinypesa.com/api/v1/express/initialize`;
     const body = `amount=${amount}&msisdn=${parseInt(
       phoneNumber
     )}&account_no=${accountNumber}`;
@@ -29,7 +29,7 @@ exports.makePayment = async (req, res, next) => {
         } else {
           const jsonBody = JSON.parse(body);
           if (jsonBody.success == true) {
-            checkPayment(userID, phoneNumber, amount, accountNumber, res, next);
+            checkPayment(accountNumber, res, next);
           } else {
             res.json({
               status: "Failed",
@@ -48,14 +48,7 @@ exports.makePayment = async (req, res, next) => {
   }
 };
 
-async function checkPayment(
-  userID,
-  phoneNumber,
-  amount,
-  accountNumber,
-  res,
-  next
-) {
+async function checkPayment(accountNumber, res, next) {
   try {
     //check payment
     let complete = 0;
@@ -67,7 +60,7 @@ async function checkPayment(
       if (complete !== 1 && !responseSent) {
         request(
           {
-            url: `${process.env.TINYPESA_PAYMENT_CHECK_ENDPOINT}/${accountNumber}`,
+            url: `https://tinypesa.com/api/v1/express/get_status/${accountNumber}`,
             method: "GET",
             headers: {
               Apikey: process.env.APE_30_TINY_PESA_API_KEY,
