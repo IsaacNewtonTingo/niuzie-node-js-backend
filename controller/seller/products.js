@@ -12,8 +12,6 @@ const { ProductReview } = require("../../models/seller/product-reviews");
 const SaveProduct = require("../../models/general/save-product");
 const { Payments } = require("../../models/general/user-payments");
 
-const cloudinary = require("../../utils/cloudinary");
-
 //check how many products user has posted
 exports.checkNumberOfProducts = async (req, res) => {
   try {
@@ -192,64 +190,72 @@ const paymentStatus = async (
   newProduct,
   res
 ) => {
+  let complete = 0;
+  let responseSent = false;
+
   const interval = setInterval(() => {
     console.log("----Checking payment-----");
-    request(
-      {
-        url: `https://tinypesa.com/api/v1/express/get_status/${accountNumber}`,
-        method: "GET",
-        headers: {
-          Apikey: process.env.APE_30_TINY_PESA_API_KEY,
-          Accept: "application/json",
+
+    if (complete !== 1 && !responseSent) {
+      request(
+        {
+          url: `https://tinypesa.com/api/v1/express/get_status/${accountNumber}`,
+          method: "GET",
+          headers: {
+            Apikey: process.env.APE_30_TINY_PESA_API_KEY,
+            Accept: "application/json",
+          },
         },
-      },
-      async function (error, request, body) {
-        if (error) {
-          console.log(error);
-        } else {
-          const newBody = JSON.parse(body);
-          if (newBody.is_complete == 1) {
-            clearInterval(interval);
-            clearTimeout(timeOut);
+        async function (error, request, body) {
+          if (error) {
+            console.log(error);
+          } else {
+            const newBody = JSON.parse(body);
+            complete = newBody.is_complete;
+            if (complete == 1 && !responseSent) {
+              clearInterval(interval);
+              clearTimeout(timeOut);
+              responseSent = true;
 
-            await PendingProductPayment.findOneAndUpdate(
-              { accountNumber },
-              { verified: true }
-            );
+              await PendingProductPayment.findOneAndUpdate(
+                { accountNumber },
+                { verified: true }
+              );
 
-            const newSavedProduct = await newProduct.save();
+              const newSavedProduct = await newProduct.save();
 
-            const newCompletedPayment = new CompletedProductPayment({
-              user: userID,
-              product: newSavedProduct,
-              amount,
-              phoneNumber,
-              accountNumber,
-            });
+              const newCompletedPayment = new CompletedProductPayment({
+                user: userID,
+                product: newSavedProduct,
+                amount,
+                phoneNumber,
+                accountNumber,
+              });
 
-            const savedProduct = await newCompletedPayment.save();
+              const savedProduct = await newCompletedPayment.save();
 
-            const newPayment = new Payments({
-              user: userID,
-              phoneNumber,
-              extraProduct: newSavedProduct,
-              productPromotion: null,
-              premium: false,
-              amountPaid: amount,
-              accountNumber,
-            });
+              const newPayment = new Payments({
+                user: userID,
+                phoneNumber,
+                extraProduct: newSavedProduct,
+                productPromotion: null,
+                premium: false,
+                amountPaid: amount,
+                accountNumber,
+              });
 
-            await newPayment.save();
+              await newPayment.save();
 
-            res.json({
-              status: "Success",
-              message: "Payment made successfully. Your product was posted",
-              data: savedProduct._id,
-            });
+              res.json({
+                status: "Success",
+                message: "Payment made successfully. Your product was posted",
+                data: savedProduct._id,
+              });
+            }
           }
         }
-      }
-    );
+      );
+    }
   }, 1000);
 
   const timeOut = setTimeout(() => {
@@ -984,17 +990,19 @@ exports.getSavedProducts = async (req, res) => {
       .populate({
         path: "product",
         select:
-          "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate",
+          "user productName category subCategory condition description price rating image1 image2 image3 image4 promoted expiryNotificationDate active",
         populate: [
           { path: "category", select: "categoryName" },
           { path: "subCategory", select: "subCategoryName" },
         ],
       });
 
+      const activeSavedProducts=products.filter((product)=>product.active==true)
+
     res.json({
       status: "Success",
       message: "Saved products retrieved successfully",
-      data: products,
+      data: activeSavedProducts,
     });
   } catch (error) {
     console.log(error);
