@@ -14,13 +14,6 @@ const { Product } = require("../../models/seller/products");
 exports.joinPremium = async (req, res) => {
   const userID = req.params.id;
   const { phoneNumber } = req.body;
-  //check if already premium
-  //make payment
-  //update user model to premium
-  //update expiry date
-  //add record to premium users
-  //change all their products---paid-true,verified-true,active-true,promoted-true,
-  //add record to payments
 
   try {
     const user = await User.findOne({ _id: userID });
@@ -87,80 +80,89 @@ const paymentStatus = async (
   phoneNumber,
   res
 ) => {
+  let complete = 0;
+  let responseSent = false;
+
   const interval = setInterval(() => {
     console.log("----Checking payment-----");
-    request(
-      {
-        url: `https://tinypesa.com/api/v1/express/get_status/${accountNumber}`,
-        method: "GET",
-        headers: {
-          Apikey: process.env.APE_30_TINY_PESA_API_KEY,
-          Accept: "application/json",
+
+    if (complete !== 1 && !responseSent) {
+      request(
+        {
+          url: `https://tinypesa.com/api/v1/express/get_status/${accountNumber}`,
+          method: "GET",
+          headers: {
+            Apikey: process.env.APE_30_TINY_PESA_API_KEY,
+            Accept: "application/json",
+          },
         },
-      },
-      async function (error, request, body) {
-        if (error) {
-          console.log(error);
-        } else {
-          const newBody = JSON.parse(body);
-          if (newBody.is_complete == 1) {
-            clearInterval(interval);
-            clearTimeout(timeOut);
+        async function (error, request, body) {
+          if (error) {
+            console.log(error);
+          } else {
+            const newBody = JSON.parse(body);
+            complete = newBody.is_complete;
 
-            await PendingPremiumPayment.findOneAndUpdate(
-              { accountNumber },
-              { verified: true }
-            );
+            if (complete == 1 && !responseSent) {
+              clearInterval(interval);
+              clearTimeout(timeOut);
+              responseSent = true;
 
-            const newCompletedPayment = new CompletedPremiumPayment({
-              user: userID,
-              amount,
-              phoneNumber,
-              accountNumber,
-            });
+              await PendingPremiumPayment.findOneAndUpdate(
+                { accountNumber },
+                { verified: true }
+              );
 
-            await newCompletedPayment.save();
-
-            const newPremium = new PremiumUsers({
-              user: userID,
-              amountPaid: amount,
-              active: true,
-            });
-
-            await newPremium.save();
-
-            const newPayment = new Payments({
-              user: userID,
-              phoneNumber,
-              extraProduct: null,
-              productPromotion: null,
-              premium: true,
-              amountPaid: amount,
-              accountNumber,
-            });
-
-            await newPayment.save();
-
-            await User.findOneAndUpdate(
-              { _id: userID },
-              { premium: true, endOfPremium: Date.now() + 604800000 }
-            );
-
-            await Product.updateMany(
-              {
+              const newCompletedPayment = new CompletedPremiumPayment({
                 user: userID,
-              },
-              { promoted: true, paid: true, verified: true, active: true }
-            );
+                amount,
+                phoneNumber,
+                accountNumber,
+              });
 
-            res.json({
-              status: "Success",
-              message: "Payment made successfully. Your now a premium member",
-            });
+              await newCompletedPayment.save();
+
+              const newPremium = new PremiumUsers({
+                user: userID,
+                amountPaid: amount,
+                active: true,
+              });
+
+              await newPremium.save();
+
+              const newPayment = new Payments({
+                user: userID,
+                phoneNumber,
+                extraProduct: null,
+                productPromotion: null,
+                premium: true,
+                amountPaid: amount,
+                accountNumber,
+              });
+
+              await newPayment.save();
+
+              await User.findOneAndUpdate(
+                { _id: userID },
+                { premium: true, endOfPremium: Date.now() + 604800000 }
+              );
+
+              await Product.updateMany(
+                {
+                  user: userID,
+                },
+                { promoted: true, paid: true, verified: true, active: true }
+              );
+
+              res.json({
+                status: "Success",
+                message: "Payment made successfully. Your now a premium member",
+              });
+            }
           }
         }
-      }
-    );
+      );
+    }
   }, 1000);
 
   const timeOut = setTimeout(() => {
