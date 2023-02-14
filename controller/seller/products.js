@@ -1080,10 +1080,17 @@ exports.getAllUserProducts = async (req, res) => {
 //premium users products
 exports.getPremiumUserProducts = async (req, res) => {
   try {
+    let { pageNumber, limit } = req.query;
+
+    limit = 20;
+    pageNumber = 0;
+
     const products = await Product.find({ active: true })
       .populate("user", "-password -seller -admin")
       .populate("category", "categoryName")
-      .populate("subCategory", "subCategoryName");
+      .populate("subCategory", "subCategoryName")
+      .limit(parseInt(limit))
+      .skip(parseInt(pageNumber) * parseInt(limit));
 
     const premiumUserProducts = products.filter(function (product) {
       if (product.user.premium == true) {
