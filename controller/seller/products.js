@@ -171,6 +171,13 @@ exports.publishManyProducts = async (req, res) => {
     const requiredAmount = perProductAmount * numberOfProducts;
 
     if (amount == requiredAmount) {
+      //update
+      const productsToUpdate = await Product.updateMany(
+        {
+          $and: [{ user: userID }, { pending: true }],
+        },
+        { pending: false }
+      );
       //add transaction record
       //store record in db
       await Payments.create({
