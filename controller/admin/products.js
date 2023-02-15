@@ -163,7 +163,7 @@ exports.approveProduct = async (req, res) => {
 //get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({ pending: true })
+    const products = await Product.find({})
       .populate({
         path: "user",
         select: "firstName lastName phoneNumber premium county subCounty",

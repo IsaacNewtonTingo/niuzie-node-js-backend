@@ -658,6 +658,8 @@ exports.getAllProducts = async (req, res) => {
               { productName: { $regex: searchTerm, $options: "i" } },
             ],
           },
+          { pending: false },
+          { reviewed: true },
           { verified: true },
           { active: true },
           {
@@ -729,6 +731,8 @@ exports.getAllProducts = async (req, res) => {
               { productName: { $regex: searchTerm, $options: "i" } },
             ],
           },
+          { pending: false },
+          { reviewed: true },
           { verified: true },
           { active: true },
 
@@ -802,6 +806,8 @@ exports.getAllProducts = async (req, res) => {
               { productName: { $regex: searchTerm, $options: "i" } },
             ],
           },
+          { pending: false },
+          { reviewed: true },
           { verified: true },
           { active: true },
 
@@ -1077,6 +1083,55 @@ exports.getAllUserProducts = async (req, res) => {
   }
 };
 
+
+exports.getOtherUserProducts = async (req, res) => {
+  const userID = req.params.id;
+  const { productID } = req.query;
+
+  try {
+    //if there is product id, remove that product from response
+    const products = await Product.find({
+      $and: [
+        { user: userID },
+        { pending: false },
+        { reviewed: true },
+        { verified: true },
+        { active: true },
+      ],
+    })
+      .populate("user", "-password -seller -admin")
+      .populate("category", "categoryName")
+      .populate("subCategory", "subCategoryName")
+      .limit(20);
+
+    if (productID) {
+      const filteredProducts = products.filter(function (product) {
+        if (product._id != productID) {
+          return true;
+        }
+      });
+
+      res.json({
+        status: "Success",
+        message: "Products fetched successfully",
+        data: filteredProducts,
+      });
+    } else {
+      res.json({
+        status: "Success",
+        message: "Products fetched successfully",
+        data: products,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting user products",
+    });
+  }
+};
+
 //premium users products
 exports.getPremiumUserProducts = async (req, res) => {
   try {
@@ -1085,7 +1140,14 @@ exports.getPremiumUserProducts = async (req, res) => {
     limit = 20;
     pageNumber = 0;
 
-    const products = await Product.find({ active: true })
+    const products = await Product.find({
+      $and: [
+        { active: true },
+        { pending: false },
+        { reviewed: true },
+        { verified: true },
+      ],
+    })
       .populate("user", "-password -seller -admin")
       .populate("category", "categoryName")
       .populate("subCategory", "subCategoryName")
