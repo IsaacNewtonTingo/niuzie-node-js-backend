@@ -1043,7 +1043,6 @@ exports.getActiveUserProducts = async (req, res) => {
 
 exports.getAllUserProducts = async (req, res) => {
   const userID = req.params.id;
-  const { productID } = req.query;
 
   try {
     //if there is product id, remove that product from response
@@ -1055,25 +1054,38 @@ exports.getAllUserProducts = async (req, res) => {
       .populate("subCategory", "subCategoryName")
       .limit(20);
 
-    if (productID) {
-      const filteredProducts = products.filter(function (product) {
-        if (product._id != productID) {
-          return true;
-        }
-      });
+    const activeProducts = products.filter(
+      (product) =>
+        product.active &&
+        product.reviewed &&
+        !product.pending &&
+        product.verified
+    );
 
-      res.json({
-        status: "Success",
-        message: "Products fetched successfully",
-        data: filteredProducts,
-      });
-    } else {
-      res.json({
-        status: "Success",
-        message: "Products fetched successfully",
-        data: products,
-      });
-    }
+    const underReviewProducts = products.filter(
+      (product) =>
+        !product.active &&
+        !product.reviewed &&
+        !product.pending &&
+        !product.verified
+    );
+    const inactiveProducts = products.filter(
+      (product) =>
+        !product.active &&
+        product.reviewed &&
+        !product.pending &&
+        !product.verified
+    );
+
+    res.json({
+      status: "Success",
+      message: "Products fetched successfully",
+      data: {
+        activeProducts: activeProducts,
+        underReviewProducts: underReviewProducts,
+        inactiveProducts: inactiveProducts,
+      },
+    });
   } catch (error) {
     console.log(error);
     res.json({
@@ -1082,7 +1094,6 @@ exports.getAllUserProducts = async (req, res) => {
     });
   }
 };
-
 
 exports.getOtherUserProducts = async (req, res) => {
   const userID = req.params.id;

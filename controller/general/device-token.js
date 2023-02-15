@@ -35,3 +35,6 @@ exports.storeToken = async (req, res) => {
     });
   }
 };
+
+//deactivate token
+exports.deactivateToken = async (req, res) => {};

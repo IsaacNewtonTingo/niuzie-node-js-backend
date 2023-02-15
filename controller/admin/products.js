@@ -93,14 +93,33 @@ exports.approveProduct = async (req, res) => {
             }));
 
             await Notification.insertMany(newCategoryNotif);
-            //send push notifications to this users--------------------------------------------
-            // sendNotification(1, 2);
 
-            res.json({
-              status: "Success",
-              message: "Product successfully approved",
+            categorySubscribers.filter(async (catSubs) => {
+              //get the users token
+              const userToken = await DeviceToken.find({
+                $and: [{ user: catSubs.user }, { active: true }],
+              });
+
+              const deviceTokens = userToken.map((token) => token.token);
+
+              //send push notifications to these users----------------------------------
+
+              const notificationTitle = "New product posted";
+              const notificationBody = `Hello, new product has been posted ot the category ${categoryName}`;
+
+              sendNotification(
+                deviceTokens,
+                notificationTitle,
+                notificationBody,
+                product
+              );
             });
           }
+
+          res.json({
+            status: "Success",
+            message: "Product successfully approved",
+          });
         } else {
           //create notification
           await product.updateOne({
