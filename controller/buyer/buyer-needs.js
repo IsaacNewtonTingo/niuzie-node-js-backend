@@ -93,13 +93,20 @@ exports.editNeed = async (req, res) => {
 
 exports.getAllNeeds = async (req, res) => {
   try {
+    let { pageNumber, limit } = req.query;
+
+    limit = 20;
+    pageNumber = 0;
+
     const list = await BuyerNeed.find({})
       .populate({
         path: "user",
         select:
           "firstName lastName phoneNumber email profilePicture county subCounty",
       })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip(parseInt(pageNumber) * parseInt(limit));
 
     res.json({
       status: "Success",
