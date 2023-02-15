@@ -31,8 +31,8 @@ server.listen(PORT, () => {
 });
 
 setInterval(function () {
-  require("./config/deactivate-expired-products");
-  require("./config/auto-send-email-to-almost-expired-products");
+  require("./jobs/deactivate-expired-products");
+  require("./jobs/auto-send-sms-to-almost-expired-products");
 }, 1200000);
 
 require("./config/db");
