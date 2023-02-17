@@ -28,7 +28,7 @@ const UserSchema = new Schema(
     },
     acceptedTerms: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   { timestamps: true }
