@@ -23,7 +23,7 @@ const seedDB = async () => {
   const categories = await Category.find({});
   const subCategories = await SubCategory.find({});
 
-  for (let i = 0; i < 10000; i++) {
+  for (let i = 0; i < 100000; i++) {
     const randomUserIndex = Math.floor(Math.random() * users.length);
     const randomUser = users[randomUserIndex];
 
@@ -51,10 +51,10 @@ const seedDB = async () => {
       condition: randomCondition,
       description: faker.commerce.productDescription(),
       price: faker.commerce.price(),
-      image1: faker.image.business(),
-      image2: faker.image.business(),
-      image3: faker.image.business(),
-      image4: faker.image.business(),
+      image1: faker.image.faker.internet.avatar(),
+      image2: faker.image.faker.internet.avatar(),
+      image3: faker.image.faker.internet.avatar(),
+      image4: faker.image.faker.internet.avatar(),
 
       promoted: faker.datatype.boolean(),
       paid: faker.datatype.boolean(),

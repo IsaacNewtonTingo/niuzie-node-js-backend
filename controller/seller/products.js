@@ -640,7 +640,6 @@ exports.getAllProducts = async (req, res) => {
     } = req.query;
 
     limit = 20;
-    pageNumber = 0;
 
     sort = {
       price,
@@ -676,8 +675,8 @@ exports.getAllProducts = async (req, res) => {
         .populate("subCategory", "subCategoryName")
         .sort(sort)
 
-        .limit(parseInt(limit))
-        .skip(parseInt(pageNumber) * parseInt(limit));
+        .skip(parseInt(pageNumber) * parseInt(limit))
+        .limit(parseInt(limit));
 
       if (county && !subCounty) {
         const filteredProducts = products.filter(function (product) {
@@ -751,8 +750,8 @@ exports.getAllProducts = async (req, res) => {
         .populate("subCategory", "subCategoryName")
         .sort(sort)
 
-        .limit(parseInt(limit))
-        .skip(parseInt(pageNumber) * parseInt(limit));
+        .skip(parseInt(pageNumber) * parseInt(limit))
+        .limit(parseInt(limit));
 
       if (county && !subCounty) {
         const filteredProducts = products.filter(function (product) {
@@ -824,8 +823,8 @@ exports.getAllProducts = async (req, res) => {
         .populate("subCategory", "subCategoryName")
         .sort(sort)
 
-        .limit(parseInt(limit))
-        .skip(parseInt(pageNumber) * parseInt(limit));
+        .skip(parseInt(pageNumber) * parseInt(limit))
+        .limit(parseInt(limit));
 
       if (county && !subCounty) {
         const filteredProducts = products.filter(function (product) {
@@ -1149,7 +1148,6 @@ exports.getPremiumUserProducts = async (req, res) => {
     let { pageNumber, limit } = req.query;
 
     limit = 20;
-    pageNumber = 0;
 
     const products = await Product.find({
       $and: [

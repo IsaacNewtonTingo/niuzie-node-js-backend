@@ -96,7 +96,6 @@ exports.getAllNeeds = async (req, res) => {
     let { pageNumber, limit } = req.query;
 
     limit = 20;
-    pageNumber = 0;
 
     const list = await BuyerNeed.find({})
       .populate({
