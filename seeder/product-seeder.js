@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const { Product } = require("../models/seller/products");
 const { faker } = require("@faker-js/faker");
+const User = require("../models/general/user");
+const { Category } = require("../models/admin/categories");
+const { SubCategory } = require("../models/admin/sub-category");
 
 require("dotenv").config();
 
@@ -15,29 +18,52 @@ mongoose
     console.log(err);
   });
 
-const seedProducts = [
-  {
-    user: "63b2b28ad56b224ad8514e91",
-    productName: faker.commerce.productName(),
-    category: "63b2b380d56b224ad8514e9c",
-    subCategory: "63b2b3b4d56b224ad8514e9f",
-    condition: "New",
-    description: faker.commerce.productDescription(),
-    price: faker.commerce.price(),
-    image1: faker.image.business(),
-    image2: faker.image.business(),
-    image3: faker.image.business(),
-    image4: faker.image.business(),
-
-    promoted: true,
-    verified: true,
-    rating: faker.datatype.number({ min: 1, max: 5 }),
-  },
-];
-
 const seedDB = async () => {
-  for (let i = 0; i < 100; i++) {
-    await Product.insertMany(seedProducts);
+  const users = await User.find({});
+  const categories = await Category.find({});
+  const subCategories = await SubCategory.find({});
+
+  for (let i = 0; i < 10000; i++) {
+    const randomUserIndex = Math.floor(Math.random() * users.length);
+    const randomUser = users[randomUserIndex];
+
+    const randomCategoryIndex = Math.floor(Math.random() * categories.length);
+    const randomCategory = categories[randomCategoryIndex];
+
+    const randomSubCategoryIndex = Math.floor(
+      Math.random() * subCategories.length
+    );
+    const randomSubCategories = subCategories[randomSubCategoryIndex];
+
+    const conditions = [
+      "New",
+      "Used, in working conditions",
+      "Used, with minor defects",
+    ];
+    const randomCondition =
+      conditions[Math.floor(Math.random() * conditions.length)];
+
+    await Product.create({
+      user: randomUser._id,
+      productName: faker.commerce.productName(),
+      category: randomCategory,
+      subCategory: randomSubCategories,
+      condition: randomCondition,
+      description: faker.commerce.productDescription(),
+      price: faker.commerce.price(),
+      image1: faker.image.business(),
+      image2: faker.image.business(),
+      image3: faker.image.business(),
+      image4: faker.image.business(),
+
+      promoted: faker.datatype.boolean(),
+      paid: faker.datatype.boolean(),
+      pending: faker.datatype.boolean(),
+      reviewed: faker.datatype.boolean(),
+      verified: faker.datatype.boolean(),
+      active: faker.datatype.boolean(),
+      rating: faker.datatype.number({ min: 1, max: 5 }),
+    });
   }
 };
 seedDB().then(() => {
