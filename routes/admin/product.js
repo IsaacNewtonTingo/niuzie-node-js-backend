@@ -5,10 +5,14 @@ const access = require("../../middleware/jwt");
 
 const {
   approveProduct,
-  getAllProducts,
+  getNewProducts,
+  getApprovedProducts,
+  getRejectedProducts,
 } = require("../../controller/admin/products");
 
 router.put("/approve-product/:id", access, approveProduct);
-router.get("/get-products", access, getAllProducts);
+router.get("/get-new-products", access, getNewProducts);
+router.get("/get-approved-products", access, getApprovedProducts);
+router.get("/get-rejected-products", access, getRejectedProducts);
 
 module.exports = router;

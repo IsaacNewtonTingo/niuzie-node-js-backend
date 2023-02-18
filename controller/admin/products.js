@@ -179,16 +179,111 @@ exports.approveProduct = async (req, res) => {
   }
 };
 
-//get all products
-exports.getAllProducts = async (req, res) => {
+//reject
+exports.rejectProduct = async (req, res) => {
   try {
-    const products = await Product.find({})
+    const productID = req.params.id;
+    const { userID } = req.query;
+
+    //check if user has rights
+    const user = await User.findOne({ _id: userID });
+
+    if (user?.admin !== true) {
+      res.json({
+        status: "Failed",
+        message: "Anuthorized operation",
+      });
+    } else {
+      const product = await Product.findOne(
+        { _id: productID },
+        "-paid -expiryDate -expiryNotificationDate -tenDayExpirationEmailSent"
+      )
+        .populate({
+          path: "user",
+          select:
+            "firstName lastName phoneNumber profilePicture county subCounty premium",
+        })
+        .populate({ path: "category" });
+
+      if (product) {
+        const productName = product.productName;
+        const productOwnerID = product.user;
+        const category = product.category._id;
+        const categoryName = product.category.categoryName;
+
+        //create notification
+        await product.updateOne({
+          verified: false,
+          active: false,
+          reviewed: true,
+        });
+
+        const newNotification = new Notification({
+          user: productOwnerID,
+          notificationCategory: "Product approval",
+          product,
+          title: "Product disapproved",
+          message: `Hello, your product (${productName}) has been disapproved`,
+          image: null,
+          read: false,
+        });
+
+        await newNotification.save();
+
+        //send push notification------------------------------------------------------------
+
+        let savedPushTokens = await DeviceToken.find({
+          $and: [{ user: productOwnerID }, { active: true }],
+        });
+
+        const deviceTokens = savedPushTokens.map((token) => token.token);
+
+        const notificationTitle = "Product disapproved";
+        const notificationBody = `Hello, your product (${productName}) has been disapproved`;
+
+        sendNotification(
+          deviceTokens,
+          notificationTitle,
+          notificationBody,
+          product
+        );
+
+        res.json({
+          status: "Success",
+          message: "Product successfully disapproved",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message: "Product not found",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while updating product",
+    });
+  }
+};
+
+//get all products
+exports.getNewProducts = async (req, res) => {
+  let { pageNumber = 0 } = req.query;
+  try {
+    const products = await Product.find({ reviewed: false })
+      .limit(20)
+      .sort({ createdAt: -1 })
+      .skip(20 * pageNumber)
+
       .populate({
         path: "user",
         select: "firstName lastName phoneNumber premium county subCounty",
       })
       .populate("category")
       .populate("subCategory");
+
     res.json({
       status: "Success",
       message: "Products retrieved successfully",
@@ -202,4 +297,77 @@ exports.getAllProducts = async (req, res) => {
     });
   }
 };
-//get all users
+
+//get approved
+exports.getApprovedProducts = async (req, res) => {
+  let { pageNumber = 0 } = req.query;
+  try {
+    const products = await Product.find({
+      $and: [
+        { reviewed: true },
+        { verified: true },
+        { active: true },
+        { pending: false },
+      ],
+    })
+      .limit(20)
+      .sort({ createdAt: -1 })
+      .skip(20 * pageNumber)
+
+      .populate({
+        path: "user",
+        select: "firstName lastName phoneNumber premium county subCounty",
+      })
+      .populate("category")
+      .populate("subCategory");
+
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
+      data: error,
+    });
+  }
+};
+
+//get rejected
+exports.getRejectedProducts = async (req, res) => {
+  let { pageNumber = 0 } = req.query;
+  try {
+    const products = await Product.find({
+      $and: [
+        { reviewed: true },
+        { verified: false },
+        { active: false },
+        { pending: false },
+      ],
+    })
+      .limit(20)
+      .sort({ createdAt: -1 })
+      .skip(20 * pageNumber)
+
+      .populate({
+        path: "user",
+        select: "firstName lastName phoneNumber premium county subCounty",
+      })
+      .populate("category")
+      .populate("subCategory");
+
+    res.json({
+      status: "Success",
+      message: "Products retrieved successfully",
+      data: products,
+    });
+  } catch (error) {
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting products",
+      data: error,
+    });
+  }
+};
