@@ -635,11 +635,9 @@ exports.getAllProducts = async (req, res) => {
       createdAt,
       promoted,
 
-      limit,
-      pageNumber,
+      limit = 20,
+      pageNumber = 0,
     } = req.query;
-
-    limit = 20;
 
     sort = {
       price,

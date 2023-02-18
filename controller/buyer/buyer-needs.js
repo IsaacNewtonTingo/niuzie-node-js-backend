@@ -93,25 +93,59 @@ exports.editNeed = async (req, res) => {
 
 exports.getAllNeeds = async (req, res) => {
   try {
-    let { pageNumber, limit } = req.query;
+    let {
+      pageNumber = 0,
+      limit = 20,
+      searchTerm,
+      createdAt = -1,
+      county,
+      subCounty,
+    } = req.query;
 
-    limit = 20;
+    sort = {
+      createdAt,
+    };
 
-    const list = await BuyerNeed.find({})
+    searchTerm = searchTerm ? searchTerm.trim() : "";
+
+    const list = await BuyerNeed.find({
+      content: { $regex: searchTerm, $options: "i" },
+    })
       .populate({
         path: "user",
         select:
           "firstName lastName phoneNumber email profilePicture county subCounty",
       })
-      .sort({ createdAt: -1 })
+      .sort(sort)
       .limit(parseInt(limit))
       .skip(parseInt(pageNumber) * parseInt(limit));
+    //if there is search term, query according to that
 
-    res.json({
-      status: "Success",
-      message: "Users needs retrieved successfully",
-      data: list,
-    });
+    if (county && !subCounty) {
+      const filtered = list.filter((need) => need.user.county == county);
+
+      res.json({
+        status: "Success",
+        message: "Users needs retrieved successfully",
+        data: filtered,
+      });
+    } else if (county && subCounty) {
+      const filtered = list.filter(
+        (need) => need.user.county == county && need.user.subCounty == subCounty
+      );
+
+      res.json({
+        status: "Success",
+        message: "Users needs retrieved successfully",
+        data: filtered,
+      });
+    } else {
+      res.json({
+        status: "Success",
+        message: "Users needs retrieved successfully",
+        data: list,
+      });
+    }
   } catch (error) {
     console.log(error);
     res.json({
