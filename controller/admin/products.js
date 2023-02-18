@@ -275,7 +275,7 @@ exports.getNewProducts = async (req, res) => {
     const products = await Product.find({ reviewed: false })
       .limit(20)
       .sort({ createdAt: -1 })
-      .skip(20 * pageNumber)
+      .skip(20 * parseInt(pageNumber))
 
       .populate({
         path: "user",
@@ -312,7 +312,7 @@ exports.getApprovedProducts = async (req, res) => {
     })
       .limit(20)
       .sort({ createdAt: -1 })
-      .skip(20 * pageNumber)
+      .skip(20 * parseInt(pageNumber))
 
       .populate({
         path: "user",
@@ -349,7 +349,7 @@ exports.getRejectedProducts = async (req, res) => {
     })
       .limit(20)
       .sort({ createdAt: -1 })
-      .skip(20 * pageNumber)
+      .skip(20 * parseInt(pageNumber))
 
       .populate({
         path: "user",
