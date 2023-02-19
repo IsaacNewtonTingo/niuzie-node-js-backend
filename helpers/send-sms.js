@@ -8,7 +8,7 @@ const AfricasTalking = require("africastalking")(credentials);
 async function sendSMS(phoneNumber, message) {
   const sms = AfricasTalking.SMS;
   const options = {
-    to: phoneNumber,
+    to: `+${phoneNumber}`,
     message: message,
     // from: "Party finder",
   };

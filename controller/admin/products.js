@@ -223,7 +223,7 @@ exports.rejectProduct = async (req, res) => {
           notificationCategory: "Product approval",
           product,
           title: "Product disapproved",
-          message: `Hello, your product (${productName}) has been disapproved`,
+          message: `Hello, your product (${productName}) has been rejected`,
           image: null,
           read: false,
         });
@@ -250,7 +250,7 @@ exports.rejectProduct = async (req, res) => {
 
         res.json({
           status: "Success",
-          message: "Product successfully disapproved",
+          message: "Product successfully rejected",
         });
       } else {
         res.json({
@@ -270,12 +270,12 @@ exports.rejectProduct = async (req, res) => {
 
 //get all products
 exports.getNewProducts = async (req, res) => {
-  let { pageNumber = 0 } = req.query;
+  var { pageNumber, limit } = req.query;
   try {
     const products = await Product.find({ reviewed: false })
-      .limit(20)
       .sort({ createdAt: -1 })
-      .skip(20 * parseInt(pageNumber))
+      .skip(parseInt(limit) * parseInt(pageNumber))
+      .limit(parseInt(limit))
 
       .populate({
         path: "user",
@@ -300,7 +300,7 @@ exports.getNewProducts = async (req, res) => {
 
 //get approved
 exports.getApprovedProducts = async (req, res) => {
-  let { pageNumber = 0 } = req.query;
+  let { pageNumber = 0, limit = 20 } = req.query;
   try {
     const products = await Product.find({
       $and: [
@@ -310,9 +310,9 @@ exports.getApprovedProducts = async (req, res) => {
         { pending: false },
       ],
     })
-      .limit(20)
       .sort({ createdAt: -1 })
-      .skip(20 * parseInt(pageNumber))
+      .skip(parseInt(limit) * parseInt(pageNumber))
+      .limit(parseInt(limit))
 
       .populate({
         path: "user",
@@ -337,7 +337,7 @@ exports.getApprovedProducts = async (req, res) => {
 
 //get rejected
 exports.getRejectedProducts = async (req, res) => {
-  let { pageNumber = 0 } = req.query;
+  let { pageNumber = 0, limit = 20 } = req.query;
   try {
     const products = await Product.find({
       $and: [
@@ -347,9 +347,9 @@ exports.getRejectedProducts = async (req, res) => {
         { pending: false },
       ],
     })
-      .limit(20)
       .sort({ createdAt: -1 })
-      .skip(20 * parseInt(pageNumber))
+      .skip(parseInt(limit) * parseInt(pageNumber))
+      .limit(parseInt(limit))
 
       .populate({
         path: "user",
