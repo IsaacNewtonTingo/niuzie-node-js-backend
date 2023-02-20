@@ -73,7 +73,8 @@ exports.submitProduct = async (req, res) => {
 
     res.json({
       status: "Success",
-      message: "Product submitted successfully",
+      message:
+        "Product successfully added to pending products. Make the payment to complete the process",
       data: {
         productID: product._id,
       },
@@ -256,7 +257,10 @@ exports.postProduct = async (req, res) => {
       res.json({
         status: "Success",
         message: "Product posted successfully",
-        data: savedProduct._id,
+        data: {
+          productID: savedProduct._id,
+          productOwnerID: userID,
+        },
       });
     } else {
       //check number of products they have
@@ -346,11 +350,15 @@ exports.postProduct = async (req, res) => {
           expiryDate: Date.now() + 7776000000,
         });
 
-        await newProduct.save();
+        const savedProduct = await newProduct.save();
 
         res.json({
           status: "Success",
           message: "Product posted successfully",
+          data: {
+            productID: savedProduct._id,
+            productOwnerID: userID,
+          },
         });
       }
     }
@@ -586,6 +594,7 @@ exports.deleteProductReview = async (req, res) => {
 
 //get reviews for a product
 exports.getProductReviews = async (req, res) => {
+  let { limit, pageNumber } = req.query;
   try {
     const productID = req.params.id;
     //check if product is available
@@ -598,7 +607,9 @@ exports.getProductReviews = async (req, res) => {
           path: "user",
           select: "firstName lastName profilePicture",
         })
-        .limit(5);
+        .skip(parseInt(limit) * parseInt(pageNumber))
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 });
       res.json({
         status: "Success",
         message: "Product reviews retrieved succesfully",
@@ -640,10 +651,10 @@ exports.getAllProducts = async (req, res) => {
     } = req.query;
 
     sort = {
+      promoted,
       price,
       rating,
       createdAt,
-      promoted,
     };
 
     if (category && !subCategory) {

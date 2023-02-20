@@ -4,7 +4,7 @@ const currentDate = Date.now();
 
 Product.updateMany(
   { expiryDate: { $lt: currentDate } },
-  { active: false, reviewed: true, verified: false }
+  { active: false, reviewed: false, verified: false, pending: true }
 )
   .then((response) => {
     if (response.modifiedCount > 0) {
