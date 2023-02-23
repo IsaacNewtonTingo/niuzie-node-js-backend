@@ -4,11 +4,20 @@ const currentDate = Date.now();
 
 Product.updateMany(
   { expiryDate: { $lt: currentDate } },
-  { active: false, reviewed: false, verified: false, pending: true }
+  {
+    active: false,
+    reviewed: true,
+    verified: false,
+    pending: false,
+    expiryDate: null,
+    expiryNotificationDate: null,
+  }
 )
   .then((response) => {
     if (response.modifiedCount > 0) {
       console.log("Expired products found and updated");
+
+      //send sms to seller saying their product has expired
     } else {
       console.log("No expired products found");
     }

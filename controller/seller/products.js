@@ -67,8 +67,6 @@ exports.submitProduct = async (req, res) => {
       image4,
       paid: true,
       pending: true,
-      expiryDate: Date.now() + 86400000,
-      expiryNotificationDate: Date.now() + 82800000,
     });
 
     res.json({
@@ -246,10 +244,6 @@ exports.postProduct = async (req, res) => {
         promoted: true,
         paid: true,
         pending: false,
-        verified: true,
-        active: true,
-        reviewed: false,
-        expiryDate: Date.now() + 7776000000,
       });
 
       const savedProduct = await newProduct.save();
@@ -264,103 +258,31 @@ exports.postProduct = async (req, res) => {
       });
     } else {
       //check number of products they have
-      const userProducts = await Product.find({ user: userID });
-      const numberOfProducts = userProducts.length;
+      const newProduct = new Product({
+        user: userID,
+        productName,
+        category,
+        subCategory,
+        condition,
+        description,
+        price,
+        image1,
+        image2,
+        image3,
+        image4,
+        pending: false,
+      });
 
-      if (numberOfProducts >= 2) {
-        const url = "https://tinypesa.com/api/v1/express/initialize";
-        const amount = 1;
-        const accountNumber = uuidv4() + userID;
-        const body = `amount=${amount}&msisdn=${parseInt(
-          phoneNumber
-        )}&account_no=${accountNumber}`;
-        const headers = {
-          Apikey: process.env.APE_30_TINY_PESA_API_KEY,
-          "Content-Type": "application/x-www-form-urlencoded",
-        };
+      const savedProduct = await newProduct.save();
 
-        //you have to pay to add more products
-        request(
-          {
-            url: url,
-            method: "POST",
-            headers,
-            body,
-          },
-          async function (error, request, body) {
-            if (error) {
-              console.log(error);
-            } else {
-              const jsonBody = JSON.parse(body);
-              if (jsonBody.success == true) {
-                const newProduct = new Product({
-                  user: userID,
-                  productName,
-                  category,
-                  subCategory,
-                  condition,
-                  description,
-                  price,
-                  image1,
-                  image2,
-                  image3,
-                  image4,
-                  paid: true,
-                  pending: false,
-                  expiryDate: Date.now() + 7776000000,
-                });
-
-                paymentStatus(
-                  userID,
-                  accountNumber,
-                  amount,
-                  phoneNumber,
-                  newProduct,
-                  res
-                );
-
-                const newPendingPay = new PendingProductPayment({
-                  user: userID,
-                  amount,
-                  accountNumber,
-                  phoneNumber,
-                });
-
-                await newPendingPay.save();
-              }
-            }
-          }
-        );
-      } else {
-        //you have the chance to post another
-
-        const newProduct = new Product({
-          user: userID,
-          productName,
-          category,
-          subCategory,
-          condition,
-          description,
-          price,
-          image1,
-          image2,
-          image3,
-          image4,
-          pending: false,
-          expiryDate: Date.now() + 7776000000,
-        });
-
-        const savedProduct = await newProduct.save();
-
-        res.json({
-          status: "Success",
-          message: "Product posted successfully",
-          data: {
-            productID: savedProduct._id,
-            productOwnerID: userID,
-          },
-        });
-      }
+      res.json({
+        status: "Success",
+        message: "Product posted successfully",
+        data: {
+          productID: savedProduct._id,
+          productOwnerID: userID,
+        },
+      });
     }
   } catch (error) {
     console.log(error);
