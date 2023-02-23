@@ -42,6 +42,8 @@ exports.approveProduct = async (req, res) => {
             verified: true,
             active: true,
             reviewed: true,
+            expiryDate: Date.now() + 7776000000,
+            expiryNotificationDate: Date.now() + 6912000000,
           });
 
           //create notification to that specific user

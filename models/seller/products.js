@@ -53,11 +53,11 @@ const ProductSchema = new Schema(
     },
     expiryDate: {
       type: Date,
-      default: Date.now() + 7776000000,
+      default: null,
     },
     expiryNotificationDate: {
       type: Date,
-      default: Date.now() + 6912000000,
+      default: null,
     },
     tenDayExpirationEmailSent: {
       type: Boolean,
