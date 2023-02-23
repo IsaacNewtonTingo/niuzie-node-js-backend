@@ -20,7 +20,10 @@ exports.getRevenue = async (req, res) => {
 
       //---------------------------------------
       const extraProductRevenue = payments.filter(
-        (payment) => payment.extraProduct
+        (payment) =>
+          payment.extraProduct == null &&
+          payment.premium == false &&
+          payment.productPromotion == null
       );
       const totalExtraRev =
         extraProductRevenue.length > 0
