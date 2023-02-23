@@ -121,46 +121,9 @@ exports.approveProduct = async (req, res) => {
             message: "Product successfully approved",
           });
         } else {
-          //create notification
-          await product.updateOne({
-            verified: false,
-            active: false,
-            reviewed: true,
-          });
-
-          const newNotification = new Notification({
-            user: productOwnerID,
-            notificationCategory: "Product approval",
-            product,
-            title: "Product disapproved",
-            message: `Hello, your product (${productName}) has been disapproved`,
-            image: null,
-            read: false,
-          });
-
-          await newNotification.save();
-
-          //send push notification------------------------------------------------------------
-
-          let savedPushTokens = await DeviceToken.find({
-            $and: [{ user: productOwnerID }, { active: true }],
-          });
-
-          const deviceTokens = savedPushTokens.map((token) => token.token);
-
-          const notificationTitle = "Product disapproved";
-          const notificationBody = `Hello, your product (${productName}) has been disapproved`;
-
-          sendNotification(
-            deviceTokens,
-            notificationTitle,
-            notificationBody,
-            product
-          );
-
           res.json({
             status: "Success",
-            message: "Product successfully disapproved",
+            message: "Product has already been approved",
           });
         }
       } else {
