@@ -273,7 +273,7 @@ exports.getNewProducts = async (req, res) => {
   var { pageNumber, limit } = req.query;
   try {
     const products = await Product.find({ reviewed: false })
-      .sort({ createdAt: -1 })
+      .sort({ promoted: -1 })
       .skip(parseInt(limit) * parseInt(pageNumber))
       .limit(parseInt(limit))
 
@@ -310,7 +310,7 @@ exports.getApprovedProducts = async (req, res) => {
         { pending: false },
       ],
     })
-      .sort({ createdAt: -1 })
+      .sort({ promoted: -1 })
       .skip(parseInt(limit) * parseInt(pageNumber))
       .limit(parseInt(limit))
 
@@ -347,7 +347,7 @@ exports.getRejectedProducts = async (req, res) => {
         { pending: false },
       ],
     })
-      .sort({ createdAt: -1 })
+      .sort({ promoted: -1 })
       .skip(parseInt(limit) * parseInt(pageNumber))
       .limit(parseInt(limit))
 
