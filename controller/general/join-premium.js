@@ -10,6 +10,7 @@ const {
 const { PremiumUsers } = require("../../models/general/premium-users");
 const { Payments } = require("../../models/general/user-payments");
 const { Product } = require("../../models/seller/products");
+const { Charges } = require("../../models/admin/charges");
 
 exports.joinPremium = async (req, res) => {
   const userID = req.params.id;
@@ -25,8 +26,10 @@ exports.joinPremium = async (req, res) => {
       });
     } else {
       //not premium
+      //get amount from db
+      const charge = await Charges.findOne({ name: "Premium subscription" });
+      const amount = charge.amount;
       const url = "https://tinypesa.com/api/v1/express/initialize";
-      const amount = 1;
       const accountNumber = uuidv4() + userID;
       const body = `amount=${amount}&msisdn=${parseInt(
         phoneNumber
