@@ -29,7 +29,7 @@ exports.createCharge = async (req, res) => {
     console.log(error);
     res.json({
       status: "Failed",
-      message: "An error occured while creating",
+      message: "An error occured while creating charge",
     });
   }
 };
@@ -46,7 +46,7 @@ exports.getCharge = async (req, res) => {
     console.log(error);
     res.json({
       status: "Failed",
-      message: "An error occured while creating",
+      message: "An error occured while getting charges",
     });
   }
 };
@@ -64,7 +64,7 @@ exports.getOneCharge = async (req, res) => {
     console.log(error);
     res.json({
       status: "Failed",
-      message: "An error occured while creating",
+      message: "An error occured while getting charge",
     });
   }
 };
