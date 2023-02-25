@@ -1,4 +1,6 @@
 const { Category } = require("../../models/admin/categories");
+const { SubCategory } = require("../../models/admin/sub-category");
+const SaveProduct = require("../../models/general/save-product");
 const { Product } = require("../../models/seller/products");
 
 exports.addCategory = async (req, res) => {
@@ -33,6 +35,38 @@ exports.addCategory = async (req, res) => {
   }
 };
 
+exports.editCategory = async (req, res) => {
+  try {
+    const categoryID = req.params.id;
+    const { categoryName, categoryImage } = req.body;
+    //check if category already exists
+
+    const category = await Category.findOne({ _id: categoryID });
+    if (!category) {
+      res.json({
+        status: "Failed",
+        message: "Category not found",
+      });
+    } else {
+      await category.updateOne({
+        categoryName,
+        categoryImage,
+      });
+
+      res.json({
+        status: "Success",
+        message: "Category updated successfully",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while adding category",
+    });
+  }
+};
+
 //delete category
 exports.deleteCategory = async (req, res) => {
   try {
@@ -40,11 +74,18 @@ exports.deleteCategory = async (req, res) => {
     //check if category already exists
 
     const category = await Category.findOneAndDelete({ _id: categoryID });
-    console.log(category);
+    //deleteSubcategories
+
+    await SubCategory.deleteMany({ category: categoryID });
+    //delete all products in that category
+    // await Product.deleteMany({ category: categoryID });
+    // //deletre all saved products
+    // const savedProducts=SaveProduct.find({})
     if (category) {
       res.json({
         status: "Success",
-        message: "Category deleted successfully",
+        message:
+          "Category deleted successfully. All products that belonged to this category have also been deleted",
       });
     } else {
       res.json({
