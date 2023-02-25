@@ -10,6 +10,10 @@ const UserSchema = new Schema(
     county: String,
     subCounty: String,
     password: String,
+    roleID: {
+      type: Number,
+      default: 2,
+    },
     premium: {
       type: Boolean,
       default: false,

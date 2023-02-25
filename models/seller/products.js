@@ -27,6 +27,10 @@ const ProductSchema = new Schema(
     image2: String,
     image3: String,
     image4: String,
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
     promoted: {
       type: Boolean,
       default: false,
