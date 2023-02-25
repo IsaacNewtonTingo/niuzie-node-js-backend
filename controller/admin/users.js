@@ -8,22 +8,32 @@ exports.addAdmin = async (req, res) => {
 
     const admin = await User.findOne({ _id: userID });
     if (admin.roleID == 0) {
-      await User.create({
-        firstName,
-        lastName,
-        phoneNumber,
-        password: await bcrypt.hash(password, 10),
-        profilePicture: "",
-        county: "",
-        subCounty: "",
-        roleID: 1,
-        admin: true,
-      });
+      //check phone
+      const existingUser = await User.findOne({ phoneNumber });
+      if (!existingUser) {
+        await User.create({
+          firstName,
+          lastName,
+          phoneNumber,
+          password: await bcrypt.hash(password, 10),
+          profilePicture: "",
+          county: "",
+          subCounty: "",
+          roleID: 1,
+          admin: true,
+        });
 
-      res.json({
-        status: "Success",
-        message: "Admin created successfully",
-      });
+        res.json({
+          status: "Success",
+          message: "Admin created successfully",
+        });
+      } else {
+        res.json({
+          status: "Failed",
+          message:
+            "User with the given phone number already exists. Please use a different number",
+        });
+      }
     } else {
       res.json({
         status: "Failed",
