@@ -50,6 +50,7 @@ const PaymentsRouter = require("./routes/general/user-payments");
 const ContactUsMessagesRouter = require("./routes/admin/contact-us");
 const AdminPaymentRouterRouter = require("./routes/admin/payments");
 const CategorySubRouter = require("./routes/general/category-sub");
+const AddAdminRouter = require("./routes/admin/users");
 
 app.use("/api/user", UserRouter, ContactUsRouter);
 app.use(
@@ -59,7 +60,8 @@ app.use(
   CategoryRouter,
   ChargeRouter,
   ContactUsMessagesRouter,
-  AdminPaymentRouterRouter
+  AdminPaymentRouterRouter,
+  AddAdminRouter
 );
 app.use("/api/product", ProductRouter);
 app.use("/api/buyer-needs", BuyerNeedsRouter);
