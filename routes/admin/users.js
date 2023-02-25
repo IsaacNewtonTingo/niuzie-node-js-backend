@@ -6,6 +6,6 @@ const access = require("../../middleware/jwt");
 
 const router = express.Router();
 
-router.put("/set-admin/:id", access, addAdmin);
+router.post("/add-admin/:id", access, addAdmin);
 
 module.exports = router;
