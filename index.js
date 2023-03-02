@@ -52,6 +52,8 @@ const AdminPaymentRouterRouter = require("./routes/admin/payments");
 const CategorySubRouter = require("./routes/general/category-sub");
 const AddAdminRouter = require("./routes/admin/users");
 
+const TextCompletionRouter = require("./routes/chatjulie/text-completion");
+
 app.use("/api/user", UserRouter, ContactUsRouter);
 app.use(
   "/api/admin",
@@ -68,3 +70,5 @@ app.use("/api/buyer-needs", BuyerNeedsRouter);
 app.use("/api/premium", JoinPremiumRouter);
 app.use("/api/payments", PaymentsRouter);
 app.use("/api/category", CategorySubRouter);
+
+app.use("/api/chatjulie/text", TextCompletionRouter);
