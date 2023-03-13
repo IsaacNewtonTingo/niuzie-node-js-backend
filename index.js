@@ -54,6 +54,8 @@ const AddAdminRouter = require("./routes/admin/users");
 
 const TextCompletionRouter = require("./routes/chatjulie/text-completion");
 
+const SendMailRouterZamara = require("./routes/zamara/send-email");
+
 app.use("/api/user", UserRouter, ContactUsRouter);
 app.use(
   "/api/admin",
@@ -72,3 +74,5 @@ app.use("/api/payments", PaymentsRouter);
 app.use("/api/category", CategorySubRouter);
 
 app.use("/api/chatjulie/text", TextCompletionRouter);
+
+app.use("/api/zamara/email", SendMailRouterZamara);
