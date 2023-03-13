@@ -48,3 +48,49 @@ exports.addAdmin = async (req, res) => {
     });
   }
 };
+
+//get all admins
+exports.getAdmins = async (req, res) => {
+  try {
+    const admins = await User.find({ roleID: 1 });
+    res.json({
+      status: "Success",
+      message: "Admins retrieved successfully",
+      data: admins,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while getting admins",
+    });
+  }
+};
+
+//remove admin
+exports.removeAdmin = async (req, res) => {
+  try {
+    const { superAdminID } = req.query;
+    const toDeleteID = req.params.id;
+
+    const superAdmin = await User.findOne({ _id: superAdminID });
+    if (superAdmin.roleID == 0) {
+      await User.findOneAndDelete({ _id: toDeleteID });
+      res.json({
+        status: "Success",
+        message: "Admin deleted successfully",
+      });
+    } else {
+      res.json({
+        status: "Failed",
+        message: "You don't have adequate rights to perform this operation",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      status: "Failed",
+      message: "An error occured while removing admin",
+    });
+  }
+};
